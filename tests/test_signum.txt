@@ -1,0 +1,21 @@
+5 tests for 'int' passed, total 5 tests passed
+2 tests for 'bool' passed, total 7 tests passed
+3 tests for big 'int' passed, total 10 tests passed
+5 tests for 'float' passed, total 15 tests passed
+2 tests for ±0.0 passed, total 17 tests passed
+2 tests for infinity passed, total 19 tests passed
+3 tests for NaN passed, total 22 tests passed
+5 tests for 'Fraction' passed, total 27 tests passed
+5 tests for 'Decimal' passed, total 32 tests passed
+1 test for Decimal NaN passed, total 33 tests passed
+2 tests for sympy passed, total 35 tests passed
+1 test for sympy.nan passed, total 36 tests passed
+6 tests for new custom class passed, total 42 tests passed
+2 tests for invalid number of arguments passed, total 44 tests passed
+7 tests for inappropriate types passed, total 51 tests passed
+Success, 51 tests passed.
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.431s
+
+OK

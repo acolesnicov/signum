@@ -1,0 +1,91 @@
+--- int
+sign(-5): -1
+sign(-1): -1
+sign(0): 0
+sign(1): 1
+sign(5): 1
+------ bool
+sign(True): 1
+sign(False): 0
+------ big numbers
+sign(10**1000): 1
+sign(-10**1000): -1
+sign(10**1000-10**1000): 0
+
+--- float
+sign(-5.0): -1
+sign(-1.0): -1
+sign(0.0): 0
+sign(1.0): 1
+sign(5.0): 1
+------ -0.0 and +0.0
+sign(float('-0.0')): 0
+sign(float('+0.0')): 0
+------ -inf and inf
+sign(-inf): -1
+sign(inf): 1
+------ -nan and nan
+sign(float('-nan')): nan
+sign(nan): nan
+sign(0.0*nan): nan
+
+--- Fraction
+sign(Fraction(-5, 2)): -1
+sign(Fraction(-1, 2)): -1
+sign(Fraction(0, 2)): 0
+sign(Fraction(1, 2)): 1
+sign(Fraction(5, 2)): 1
+
+--- Decimal
+sign(Decimal(-5.5)): -1
+sign(Decimal(-1.5)): -1
+sign(Decimal(0.0)): 0
+sign(Decimal(1.5)): 1
+sign(Decimal(5.5)): 1
+------ Decimal('NaN')
+sign(Decimal('NaN')): nan
+
+--- sympy (substitution and Rational)
+Type of val is <class 'sympy.core.numbers.Float'>
+Type of (val > 0) is <class 'sympy.logic.boolalg.BooleanFalse'>
+sign(val): -1
+sign(sympy.Rational(3, 4)): 1
+------ sympy.nan
+sign(sympy.nan): nan
+
+--- My Custom Class That Have >, <, == With Numbers But Nothing Else
+sign(MyNumber(-5)): -1
+sign(MyNumber(-1)): -1
+sign(MyNumber(0)): 0
+sign(MyNumber(1)): 1
+sign(MyNumber(5.1)): 1
+signum.sign: invalid argument `MyNumber(nan)`. Type 'MyNumber' does not support order comparisons (>, <, ==) or NaN detection.
+
+--- No arguments
+signum.sign() takes exactly one argument (0 given)
+
+--- Three arguments
+signum.sign() takes exactly one argument (3 given)
+
+--- ExplodingNumber
+signum.sign: invalid argument `ExplodingNumber(-3.14)` (type 'ExplodingNumber'). Inner error: <class 'RuntimeError'> returned a result with an exception set
+
+--- NotImplementedNumber
+signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Inner error: <function NotImplementedNumber.__eq__ at 0x000001E24AC9BEC0> returned a result with an exception set
+
+--- None
+signum.sign: invalid argument `None` (type 'NoneType'). Inner error: '<' not supported between instances of 'NoneType' and 'int'
+
+--- str
+signum.sign: invalid argument `'5.0'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
+signum.sign: invalid argument `'nan'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
+signum.sign: invalid argument `'number 5'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
+
+--- list
+signum.sign: invalid argument `[-8.75]` (type 'list'). Inner error: '<' not supported between instances of 'list' and 'int'
+
+--- complex
+signum.sign: invalid argument `(-1+1j)` (type 'complex'). Inner error: '<' not supported between instances of 'complex' and 'int'
+
+--- set
+signum.sign: invalid argument `{-3.14}` (type 'set'). Inner error: '<' not supported between instances of 'set' and 'int'
