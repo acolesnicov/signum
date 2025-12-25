@@ -1,8 +1,9 @@
-# signum
+# csignum-fast
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/release-Christmas%20Edition-red.svg)
 ![Tests](https://img.shields.io/badge/tests-51%20passed-brightgreen.svg)
+![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
 **A robust, high-performance C++ implementation of the universal sign function for Python.**
 *Released on December 25, 2025 — The Christmas Edition.*
@@ -25,7 +26,7 @@
 ## Installation
 
 ```bash
-pip install signum
+pip install csignum-fast
 ```
 
 ## Usage
