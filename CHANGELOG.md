@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.1] - 2025-12-25 (Christmas Edition)
+- Initial public release on PyPI as `csignum-fast`.
+- Added project URLs and metadata for GitHub integration.
+
 ## [1.0.0] - 2025-12-25 (Christmas Edition)
 ### Added
 - Initial stable release of the `signum` C++ extension.

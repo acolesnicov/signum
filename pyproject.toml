@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "csignum-fast"
-version = "1.0.0"
+version = "1.0.1"
 description = "High-performance universal sign function"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -25,3 +25,9 @@ classifiers = [
 ext-modules = [
     {name = "signum", sources = ["signum.cpp"]}
 ]
+
+[project.urls]
+Homepage = "https://github.com/acolesnicov/signum"
+Repository = "https://github.com/acolesnicov/signum.git"
+Issues = "https://github.com/acolesnicov/signum/issues"
+Changelog = "https://github.com/acolesnicov/signum/blob/main/CHANGELOG.md"
