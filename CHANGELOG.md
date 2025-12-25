@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2025-12-25 (Christmas Edition)
+- The prototype block deleted from `test-signum.py`.
+
 ## [1.0.1] - 2025-12-25 (Christmas Edition)
 - Initial public release on PyPI as `csignum-fast`.
 - Added project URLs and metadata for GitHub integration.
