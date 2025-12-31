@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2025-12-31 (New Year Edition)
+- **Refactored core logic**:
+    - Replaced the 27-state switch with optimized conditional branching.
+    - Improved execution speed for valid numeric types.
+- **Added new keyword parameters**:
+    - `preprocess`: supports custom argument transformation or early return of a pre-calculated result.
+    - `if_exc`: provides exception safety by returning a fallback value instead of raising errors.
+- **Expanded test suite**:
+    - Increased validation cases from 51 to 92.
+    - Added comparative benchmarking against v1.0.2, and memory leak test.
+
 ## [1.0.2] - 2025-12-25 (Christmas Edition)
 - The prototype block deleted from `test-signum.py`.
 

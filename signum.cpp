@@ -1,60 +1,195 @@
 /*
  * signum.cpp
  * A robust, branchless implementation of the universal sign function for Python.
- * Version: 1.0.0
- * Released: December 25, 2025 (Christmas Edition)
+ * Version: 1.1.0
+ * Released: December 31, 2025 ❄️ New Year Edition
  * Author: Alexandru Colesnicov
  * License: MIT
  */
 
 #include <Python.h>
 
-static PyObject *
-signum_sign(PyObject *module, PyObject *x)
+static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
 {
+    /* Processing arguments */
+    PyObject *x;
+    PyObject *if_exc = Py_None;
+    PyObject *preprocess = Py_None;
+    static const char *kwlist[] = {"x", "if_exc", "preprocess", NULL};
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|$OO", const_cast<char**>(kwlist),
+                                     &x, &if_exc, &preprocess)) {
+        return NULL; /* Error in arguments: delegated to Python */
+    }
+
+    /* preprocess */
+    PyObject *to_free = NULL;
+    if (preprocess != Py_None) { /* 'preprocess' argument exists, call it without checking */
+        PyObject *ppres = PyObject_CallFunctionObjArgs(preprocess, x, NULL);
+        if (ppres == NULL) { /* Error inside 'preprocess(x)': ignore */
+            PyErr_Clear();
+        } else {
+            if (PyTuple_Check(ppres)) { /* 'ppres' is a tuple */
+                Py_ssize_t t_size = PyTuple_Size(ppres);
+
+                /* Optimization: Tell the compiler that 'tsize' >= 0 */
+                #if __has_cpp_attribute(assume)
+                    [[assume(0 <= t_size)]];
+                #elif defined(_MSC_VER)
+                    __assume(0 <= t_size);
+                #elif defined(__GNUC__) || defined(__clang__)
+                    if (t_size < 0) __builtin_unreachable();
+                #endif
+
+                switch (t_size) {
+                    case 0: break; /* Ignore the empty tuple */
+                    case 1: {      /* Replace argument */
+                        PyObject *item0 = PyTuple_GetItem(ppres, 0);
+                        Py_INCREF(item0);
+                        x = item0;
+                        to_free = item0;
+                        break;
+                    }
+                    default: {     /* 't_size' > 1: replace result */
+                        PyObject *item1 = PyTuple_GetItem(ppres, 1);
+                        Py_INCREF(item1);
+                        Py_DECREF(ppres);
+                        return item1;
+                    }
+                }
+            }
+            Py_DECREF(ppres);
+        }
+    }
+
     /* Check for numeric NaN */
     double d = PyFloat_AsDouble(x);
-    if (Py_IS_NAN(d)) return PyFloat_FromDouble(Py_NAN);
-    /* If it is something special, we will try comparisons */
+    if (Py_IS_NAN(d)) {
+        Py_XDECREF(to_free);
+        return PyFloat_FromDouble(Py_NAN);
+    }
+    /* If it is something special, we will nevertheless try comparisons */
     if (PyErr_Occurred()) PyErr_Clear();
 
     PyObject *zero = PyLong_FromLong(0);
-    if (!zero) return NULL; /* Memory Error? */
-
-    int gt = PyObject_RichCompareBool(x, zero, Py_GT) + 1; /* 2: True; 1: False; 0: Error */
-    int lt = PyObject_RichCompareBool(x, zero, Py_LT) + 1;
-    int res = gt - lt; /* Result, if nothing special */
-    int eq = PyObject_RichCompareBool(x, zero, Py_EQ) + 1; /* Used only to process NaN and errors */
-
-    Py_DECREF(zero); /* Not used anymore */
-
-    /* gt, lt, eq can be 0, 1, 2; let them be digits in the ternary number system */
-    /* code = 9*gt+3*lt+eq is the value of the number written in the ternary system
-       with these digits, with possible decimal values from 0 to 26;
-       0 means that all three comparisons returned Error (quite possible for inappropriate type);
-	   26 means that all were True (extremely strange, the argument is > 0, and < 0, and == 0) */
-    /* We also use 9 = 8+1, 3 = 4-1, and replace multiplication by 8 and 4 with shift */
-    int code = (gt << 3) + (lt << 2) + eq + res;
-    /* (gt<<3) = 8*gt; (lt<<2) = 4*gt; code = 8*gt + 4*lt + eq + (gt-lt) = 9*gt+3*lt+eq */
-
-    switch (code) {
-        case 13: { /* 111₃ ->  8+4+1+0: possible NaN     (False, False, False) */
-            int self_eq = PyObject_RichCompareBool(x, x, Py_EQ);
-            switch (self_eq) {
-                case -1: return NULL; /* Error in __eq__, we keep current Python error */
-                case  0: return PyFloat_FromDouble(Py_NAN); /* NaN: not equal to itself */
-                default: goto error; /* Not a NaN: equals to itself; not comparable to 0 */
-            }
-		}
-        case 14:   /* 112₃ ->  8+4+2+0: x == 0 (res= 0)  (False, False, True ) */
-        case 16:   /* 121₃ ->  8+8+1-1: x <  0 (res=-1)  (False, True,  False) */
-        case 22:   /* 211₃ -> 16+4+1+1: x >  0 (res= 1)  (True,  False, False) */
-            return PyLong_FromLong((long)res);
-        default:  /* No more valid cases */
-            goto error;
+    if (!zero) { /* Memory Error? */
+        Py_XDECREF(to_free);
+        return NULL;
     }
 
+    /* Start of the ternary logic block */
+    int gt, lt, eq, res, code, self_eq;
+
+    gt = PyObject_RichCompareBool(x, zero, Py_GT) + 1; /* 0: Error; 1: False; 2: True */
+    code = gt;
+
+    lt = PyObject_RichCompareBool(x, zero, Py_LT) + 1;
+    res = gt - lt; /* Result, if nothing special */
+
+    /* Optimization: Tell the compiler that 'lt' is strictly within [0, 2] */
+    #if __has_cpp_attribute(assume)
+        [[assume(0 <= lt && lt <= 2)]];
+    #elif defined(_MSC_VER)
+        __assume(0 <= lt && lt <= 2);
+    #elif defined(__GNUC__) || defined(__clang__)
+        if (!(0 <= lt && lt <= 2)) __builtin_unreachable();
+    #endif
+
+    switch (lt) {
+        case 0: goto error;
+        case 1: break; /* 'code == gt' is mutiplied by 'lt == 1' */
+        case 2: code = (code << 1) & 3; /* 'code == gt' is shift-mutiplied by 'lt == 2'
+                                                        and truncated mod 4 */
+    }
+
+    eq = PyObject_RichCompareBool(x, zero, Py_EQ) + 1; /* Used only to process NaN and errors */
+    Py_DECREF(zero); /* Not used anymore */
+
+    #if __has_cpp_attribute(assume)
+        [[assume(0 <= eq && eq <= 2)]];
+    #elif defined(_MSC_VER)
+        __assume(0 <= eq && eq <= 2);
+    #elif defined(__GNUC__) || defined(__clang__)
+        if (!(0 <= eq && eq <= 2)) __builtin_unreachable();
+    #endif
+
+    switch (eq) {
+        case 0: goto error;
+        case 1: break; /* 'code == (gt * lt) & 3' is mutiplied by 'eq == 1' */
+        case 2: code = (code << 1) & 3; /* 'code == (gt * lt) & 3' is shift-mutiplied by 'eq == 2'
+                                                                   and truncated mod 4 */
+    }
+
+    /* Short Logic Overview:
+       - 'code == 0': Multiple 'True' flags or an error occurred. Maps to 0, 4, 8; this is 0 mod 4.
+       - 'code == 1': Triple 'False' state (1,1,1). Potential NaN; requires self-comparison.
+       - 'code == 2': Exactly one 'True' flag, no errors. Valid numeric state.
+    */
+
+    /* Detailed Logic Overview:
+       'gt', 'lt', 'eq' can be 0 for 'Error', 1 for 'False', 2 for 'True' (ternary logic).
+       'code = (gt*lt*eq) & 3'; equivalent is '(gt*lt*eq) % 4'.
+       'code' is 0:
+         - if we have one, two, or three errors; then the product is 0;
+           (we already processed errors in 'lt' or 'eq' directly by 'goto error;');
+         - if we have two 'True' and one 'False', or three 'True'; the product is 4 or 8,
+              which gives 0 (mod 4).
+       'code' is 1:
+         - if we have triple 'False', that indicates a potential NaN, and we perform
+           an additional self-comparison;
+       'code' is 2:
+         - only if we have one 'True' and two 'False': it's a valid number */
+
+    #if __has_cpp_attribute(assume)
+        [[assume(0 <= code && code <= 2)]];
+    #elif defined(_MSC_VER)
+        __assume(0 <= code && code <= 2);
+    #elif defined(__GNUC__) || defined(__clang__)
+        if (!(0 <= code && code <= 2)) __builtin_unreachable();
+    #endif
+
+    switch (code) {
+        case 0: goto error;
+        case 1: { /* possible NaN '(False, False, False)' */
+            self_eq = PyObject_RichCompareBool(x, x, Py_EQ);
+
+            #if __has_cpp_attribute(assume)
+                [[assume(-1 <= self_eq && self_eq <= 1)]];
+            #elif defined(_MSC_VER)
+                __assume(-1 <= self_eq && self_eq <= 1);
+            #elif defined(__GNUC__) || defined(__clang__)
+                if (!(-1 <= self_eq && self_eq <= 1)) __builtin_unreachable();
+            #endif
+
+            switch (self_eq) {
+                case -1: { /* Error in __eq__, we keep current Python error */
+                    Py_XDECREF(to_free);
+                    return NULL;
+                }
+                case  0: {
+                    Py_XDECREF(to_free);
+                    return PyFloat_FromDouble(Py_NAN); /* NaN: not equal to itself */
+                }
+                case  1: goto error; /* Not a NaN: equals to itself; not comparable to 0 */
+            }
+        }
+        case 2: {
+            Py_XDECREF(to_free);
+            return PyLong_FromLong((long)res);
+        }
+    }
+    goto error;
+
 error:
+
+    if (if_exc != Py_None) { /* 'if_exc' argument exists, return its 0th element instead of error */
+        PyErr_Clear();
+        PyObject *item = PyTuple_GetItem(if_exc, 0); /* We don't check 'if_exc' that should be tuple */
+        Py_INCREF(item);
+        Py_XDECREF(to_free);
+        return item;
+    }
+
     if (PyErr_Occurred()) {
         PyObject *type, *value, *traceback;
         /* Extract the current error */
@@ -104,6 +239,7 @@ error:
                 type_name);
         }
     }
+    Py_XDECREF(to_free);
     return NULL;
 }
 
@@ -111,7 +247,7 @@ error:
 
 /* List of implemented methods */
 static PyMethodDef SignumMethods[] = {
-    {"sign", (PyCFunction)signum_sign, METH_O, "Return the sign of x: -1, 0, 1, or NaN."},
+    {"sign", (PyCFunction)signum_sign, METH_VARARGS | METH_KEYWORDS, "Return the sign of x: -1, 0, 1, or NaN."},
     {NULL, NULL, 0, NULL} /* Stop-string */
 };
 

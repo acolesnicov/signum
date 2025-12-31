@@ -4,20 +4,25 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "csignum-fast"
-version = "1.0.2"
-description = "High-performance universal sign function"
+version = "1.1.0"
+description = "High-performance universal sign function for Python"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "MIT"
 authors = [
     {name = "Alexandru Colesnicov", email = "acolesnicov@gmx.com"}
 ]
-keywords = ["math", "signum", "sign", "c-extension"]
+keywords = ["Python", "math", "signum", "sign", "c-extension"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
     "Topic :: Software Development :: Libraries",
     "Programming Language :: C",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
 ]
 

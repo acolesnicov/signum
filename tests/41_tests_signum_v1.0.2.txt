@@ -1,0 +1,2 @@
+
+Success of 1.0.2: 41 tests passed 100000 times in    6.9957s.

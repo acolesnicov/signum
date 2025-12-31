@@ -1,21 +1,32 @@
-5 tests for 'int' passed, total 5 tests passed
-2 tests for 'bool' passed, total 7 tests passed
-3 tests for big 'int' passed, total 10 tests passed
-5 tests for 'float' passed, total 15 tests passed
-2 tests for ±0.0 passed, total 17 tests passed
-2 tests for infinity passed, total 19 tests passed
-3 tests for NaN passed, total 22 tests passed
-5 tests for 'Fraction' passed, total 27 tests passed
-5 tests for 'Decimal' passed, total 32 tests passed
-1 test for Decimal NaN passed, total 33 tests passed
-2 tests for sympy passed, total 35 tests passed
-1 test for sympy.nan passed, total 36 tests passed
-6 tests for new custom class passed, total 42 tests passed
-2 tests for invalid number of arguments passed, total 44 tests passed
-7 tests for inappropriate types passed, total 51 tests passed
-Success, 51 tests passed.
+ 5 tests for Sec.  1: 'int' passed, total   5 tests passed
+ 2 tests for Sec.  2: 'bool' passed, total   7 tests passed
+ 3 tests for Sec.  3: big 'int' passed, total  10 tests passed
+ 5 tests for Sec.  4: 'float' passed, total  15 tests passed
+ 2 tests for Sec.  5: Â±0.0 passed, total  17 tests passed
+ 2 tests for Sec.  6: infinity passed, total  19 tests passed
+ 3 tests for Sec.  7: NaN passed, total  22 tests passed
+ 5 tests for Sec.  8: 'Fraction' passed, total  27 tests passed
+ 5 tests for Sec.  9: 'Decimal' passed, total  32 tests passed
+ 1 test  for Sec. 10: Decimal NaN passed, total  33 tests passed
+ 2 tests for Sec. 11: sympy passed, total  35 tests passed
+ 1 test  for Sec. 12: sympy.nan passed, total  36 tests passed
+ 6 tests for Sec. 13: new custom class passed, total  42 tests passed
+ 5 tests for Sec. 14: invalid number of arguments passed, total  47 tests passed
+ 2 tests for Sec. 15: Exploding and Not Implemented numbers passed, total  49 tests passed
+ 7 tests for Sec. 16: inappropriate types passed, total  56 tests passed
+ 3 tests for Sec. 17: preprocess with simple str replacement passed, total  59 tests passed
+ 4 tests for Sec. 18: preprocess treating small number as zero passed, total  63 tests passed
+ 4 tests for Sec. 19: preprocess extracting numbers from str passed, total  67 tests passed
+ 2 tests for Sec. 20: preprocess permitting complex arguments passed, total  69 tests passed
+ 3 tests for Sec. 21: preprocess with float result and sign recursion passed, total  72 tests passed
+ 4 tests for Sec. 22: preprocess replacing result or argument passed, total  76 tests passed
+12 tests for Sec. 23: if_exc key passed, total  88 tests passed
+ 4 tests for Sec. 24: both preprocess and if_exc passed, total  92 tests passed
+
+Success: 92 tests passed in 24 sections.
+
 .
 ----------------------------------------------------------------------
-Ran 1 test in 0.431s
+Ran 1 test in 0.362s
 
 OK
