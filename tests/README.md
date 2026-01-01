@@ -14,11 +14,11 @@ This directory contains validation and performance tools for the `csignum-fast` 
 
 Results (`*.txt`) were obtained with Python 3.13.5 (AMD64) on Lenovo ThinkPad (processor 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz, RAM 32.0 GB) under Windows 11 Pro 25H2.
 
-The 0.8% overhead mentioned in the [main documentation](../README.md) was measured by running 100,000 iterations of 41 **Pure Math** tests (total 4,100,000 `sign` calls), and comparing [v1.0.2](41_tests_signum_v1.0.2.txt) vs [v1.1.0/1](41_tests_signum_v1.1.0.txt). The resuls are collected in the table:
-| Version | Timing (s) | Overhead (s) | Overhead (%) | Per call ($\mu$s) |
+The 0.8% overhead mentioned in the [main documentation](../README.md) was measured by running 100,000 iterations of 41 **Pure Math** tests (total 4,100,000 `sign` calls), and comparing [v1.0.2](41_tests_signum_v1.0.2.txt) vs [v1.1.0/1/2](41_tests_signum_v1.1.0.txt). The resuls are collected in the table:
+| Version | Timing (s) | Overhead (s) | Overhead (%) | Per call (μs) |
 | :---: | :---: | :---: | :---: | :---: |
 | 1.0.2 | 7.00 | - | - | 1.71 |
-| 1.1.0/1 | 7.06 | 0.06 | 0.8% | 1.72 | 
+| 1.1.0/1/2 | 7.06 | 0.06 | 0.8% | 1.72 | 
 
 ## How to run
 

@@ -9,7 +9,7 @@
 
 *Released on January 1, 2026* ❄️ *New Year Edition.*
 
-Version 1.1.1 corrected links and typos in documentation after a major internal refactor in v1.1.0.
+Version 1.1.1/2 corrected links and typos in documentation after a major internal refactor in v1.1.0.
 
 ## Key Features
 
@@ -120,14 +120,14 @@ With `preprocess`, you replace arguments (or results) in specific cases, while `
 ## 📊 Performance & Quality Assurance
 
 ### Benchmark Results
-Versions 1.1.0/1 maintain near-zero overhead (+0.8% latency) despite adding logic for new arguments. See details in the "Benchmarking" section in [README for tests](tests/README.md).
+Versions 1.1.0/1 maintain near-zero overhead (+0.8% latency) despite adding logic for new arguments. See details in the "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
 
 ### Reliability
 - **Memory Safety:** Verified with long-run leak tests (0 bytes leaked over 4M iterations).
 - **Test Coverage:** 92 validation cases (up from 51 in v1.0.2).
 
 ## License
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/acolesnicov/signum/blob/main/LICENSE) file for details.
 
 ## Author
 **Alexandru Colesnicov**: [GitHub Profile](https://github.com/acolesnicov)
