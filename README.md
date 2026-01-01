@@ -9,7 +9,7 @@
 
 *Released on January 1, 2026* ❄️ *New Year Edition.*
 
-Versions 1.1.1+ corrected links and typos in documentation, and metadata for Github, after a major internal refactor in v1.1.0.
+This is Version 1.1.5. Versions 1.1.1+ correct links and typos in documentation, and metadata for Github, after a major internal refactor in v1.1.0.
 
 ## Key Features
 
@@ -37,13 +37,14 @@ pip install csignum-fast
 ## Standard Usage
 
 ```python
-from signum import sign
-from decimal import Decimal
+from signum import sign # Obligatory for all examples
 
 print(sign(-10**100))       # -1
 print(sign(3.14))           #  1
+print(sign(float('-nan')))  # math.nan
+
+from decimal import Decimal
 print(sign(Decimal("0.0"))) #  0
-print(sign(float('-nan')))  # nan
 ```
 
 ## Advanced Usage (New features since v1.1.0)
@@ -52,25 +53,23 @@ print(sign(float('-nan')))  # nan
 For productivity reasons, keyword argument values are **not checked** by the `sign` function. It is your responsibility to:
 * Pass a **`callable`** with one argument for `preprocess` (must return `None` or a `tuple`).
 * Pass a **`tuple`** for `if_exc`.
+* All calculations implied by these arguments do not result in additional exceptions or faults.
 
-*Passing incorrect types to these parameters may lead to undefined behavior or faults.*
+*Passing incorrect values to these parameters may lead to undefined behavior or faults.*
 
 ### ⚡ Custom Pre-processing with `preprocess`
-You can pass a `callable` to transform the input. The argument of `callable` is the positional argument of `sign`. The `callable` should support a special return protocol:
-- Return `None`: Proceed with usual calculation.
-- Return `(value,)`: Proceed with calculation using `value` as an argument. Why a `tuple`? Use `(None,)` to return `None` as a `value`.
-- Return `(any, result)`: Early Exit. Immediately return `result` as the final answer. `any` is ignored.
+With `preprocess` keyword argument, you can pass a `callable` to transform the input. Default: `preprocess=None` (no preprocessing). 
+
+The `callable` will be called with the positional argument of `sign`. It should support a special return protocol:
+- Return `None`: `sign` proceed with usual calculation.
+- Return `(value,)`: `sign` proceed with calculation using `value` as an argument. Why a `tuple`? Use `(None,)` to return `None` as a `value` (usually raises `TypeError`).
+- Return `(any, result)`: Early Exit. Immediately return `result` as the final answer of `sign`. `any` is ignored.
 
 ```python
-from signum import sign
-
-from decimal import Decimal
-from fractions import Fraction
-from math import nan, inf
-import re
+from signum import sign # Obligatory for all examples
 
 # Convert str to float; uses lambda as callable
-sign('5.0', preprocess=lambda a: (float(a),)) # Returns 1 (instead of exception)
+sign('5.0', preprocess=lambda a: (float(a),)) # Returns 1 instead of `TypeError` exception
 
 # Treat small number as zero through argument replacement only
 EPS = 1e-9
@@ -81,6 +80,7 @@ ppf1 = lambda x: (x, 0) if abs(x) < EPS else (x,)
 sign(-.187e-17, preprocess=ppf1) # Returns 0 (instead of -1)
 
 # Extract number from string, replace only string argument; supplies function as callable
+import re
 numeric_finder = re.compile(r"[-+]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][-+]?\d+)?")
 
 def n_extract(s):
@@ -89,9 +89,9 @@ def n_extract(s):
         return (float(match.group()),) if match else None
     return None
 
-sign("☠️ 15 men on the dead man's chest☠️", preprocess=n_extract) # Returns sign(15) == 1
+sign("☠️15 men on the dead man's chest☠️", preprocess=n_extract) # Returns sign(15) == 1
 
-# Do you want sign(complex) instead of exception?
+# Do you want sign(complex) instead of `TypeError` exception?
 def c_prep(z):
     if z == 0 or not isinstance(z, complex): return None
     # complex z != 0
@@ -100,6 +100,7 @@ def c_prep(z):
 sign(-1+1j, preprocess=c_prep) # Returns (-0.7071067811865475+0.7071067811865475j)
 
 # numpy flavor: float result for float or Decimal argument; uses recursive call of sign
+from decimal import Decimal
 ppf2 = lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None
 sign(-5.0, preprocess=ppf2) # Returns -1.0 (instead of -1)
 ```
@@ -107,11 +108,9 @@ sign(-5.0, preprocess=ppf2) # Returns -1.0 (instead of -1)
 ### 🛡️ Exception Safety with `if_exc`
 With this keyword, you can avoid try-except blocks. If `sign()` encounters an incompatible type, it will return your fallback value instead of raising a `TypeError`. `if_exc` should be a tuple that permits you to pass `None` as the fallback value through `if_exc=(None,)`. (Default `if_exc=None` is totally different).
 ```python
-import math
-from signum import sign
+from signum import sign # Obligatory for all examples
 
-# Returns -2 instead of crashing
-res = sign("not a number", if_exc=(-2,))
+sign("not a number", if_exc=(-2,)) # Returns -2 instead of `TypeError` exception
 ```
 
 ### You can use both keyword arguments at once

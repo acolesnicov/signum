@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.5] - 2026-01-01 (New Year Edition)
+- Fixed usage of `import` in examples.
+
 ## [1.1.4] - 2026-01-01 (New Year Edition)
 - Fixed metadata for Github Actions in release.yml.
 
