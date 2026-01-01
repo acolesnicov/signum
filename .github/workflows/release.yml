@@ -20,7 +20,7 @@ jobs:
         uses: pypa/cibuildwheel@v2.22.0
         env:
           # Flags for C++23 ([[assume]])
-          CIBW_ENVIRONMENT_LINUX: "CXXFLAGS='-std=c++23 -O3' LDFLAGS='-static-libstdc++'"
+          CIBW_ENVIRONMENT_LINUX: "CXXFLAGS='-std=c++20 -O3' LDFLAGS='-static-libstdc++'"
           CIBW_ENVIRONMENT_WINDOWS: "CXXFLAGS='/std:c++latest /O2'"
           # Skip old versions and specific builds
           CIBW_SKIP: "cp36-* cp37-* pp* *-musllinux_*"
