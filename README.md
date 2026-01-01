@@ -1,16 +1,15 @@
-
 # csignum-fast
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/release-Christmas%20Edition-red.svg)
-![Tests](https://img.shields.io/badge/tests-51%20passed-brightgreen.svg)
+![Status](https://img.shields.io/badge/release-New%20Year%20Edition-blue.svg)
+![Tests](https://img.shields.io/badge/tests-92%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
 **A versatile, high-performance C++ implementation of the universal sign function for Python.**
 
-*Released on December 31, 2025* ❄️ *New Year Edition.*
+*Released on January 1, 2026* ❄️ *New Year Edition.*
 
-Version 1.1.0 is a major internal refactor focused on flexibility without sacrificing our performance.
+Version 1.1.1 corrected links and typos in documentation after a major internal refactor in v1.1.0.
 
 ## Key Features
 
@@ -24,9 +23,9 @@ Version 1.1.0 is a major internal refactor focused on flexibility without sacrif
     * `fractions.Fraction` and `decimal.Decimal`.
     * Any existing and future objects that support rich comparisons with numbers.
 4.  **Informative Error Handling for Easy Debugging**: Provides clear, descriptive `TypeError` messages when passed non-numeric, non-scalar, or incomparable arguments.
-5.  **⚡ High Performance**: Branch-optimized C++20 core (~17-18 ns per call).
-6.  **✅ Thoroughly Tested**: Tested on 92 cases including different types, edge cases, new custom class, and inappropriate arguments. Also tested memory leaks and benchmarking against v1.0.2
-7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an "early return" (recursion permitted).
+5.  **⚡ High Performance**: Branch-optimized C++20 core.
+6.  **✅ Thoroughly Tested**: Tested on 92 cases including different types, edge cases, new custom class, and inappropriate arguments. Also tested memory leaks and benchmarking against v1.0.2.
+7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an "Early Exit" (recursion permitted).
 8.  **🛡️ Exception safety**: The `if_exc` keyword argument allows you to define a fallback value (like `None`, `math.nan`, or `-2`) instead of crashing on invalid types.
 
 ## Installation
@@ -47,14 +46,14 @@ print(sign(Decimal("0.0"))) #  0
 print(sign(float('-nan')))  # nan
 ```
 
-## Advanced Usage (New features in v1.1.0)
+## Advanced Usage (New features since v1.1.0)
 
 ### ☢️ Attention: Contract Programming!
 For productivity reasons, keyword argument values are **not checked** by the `sign` function. It is your responsibility to:
 * Pass a **`callable`** with one argument for `preprocess` (must return `None` or a `tuple`).
 * Pass a **`tuple`** for `if_exc`.
 
-*Passing incorrect types to these parameters may lead to undefined behavior or segmentation faults.*
+*Passing incorrect types to these parameters may lead to undefined behavior or faults.*
 
 ### ⚡ Custom Pre-processing with `preprocess`
 You can pass a `callable` to transform the input. The argument of `callable` is the positional argument of `sign`. The `callable` should support a special return protocol:
@@ -102,12 +101,11 @@ sign(-1+1j, preprocess=c_prep) # Returns (-0.7071067811865475+0.7071067811865475
 
 # numpy flavor: float result for float or Decimal argument; uses recursive call of sign
 ppf2 = lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None
-sign(-5.0, preprocess=ppf2) # Returns 1.0 (instead of 1)
+sign(-5.0, preprocess=ppf2) # Returns -1.0 (instead of -1)
 ```
 
 ### 🛡️ Exception Safety with `if_exc`
 With this keyword, you can avoid try-except blocks. If `sign()` encounters an incompatible type, it will return your fallback value instead of raising a `TypeError`. `if_exc` should be a tuple that permits you to pass `None` as the fallback value through `if_exc=(None,)`. (Default `if_exc=None` is totally different).
-
 ```python
 import math
 from signum import sign
@@ -116,16 +114,17 @@ from signum import sign
 res = sign("not a number", if_exc=(-2,))
 ```
 
+### You can use both keyword arguments at once
+With `preprocess`, you replace arguments (or results) in specific cases, while `if_exc` prevents exceptions for all that remains. 
+
 ## 📊 Performance & Quality Assurance
 
 ### Benchmark Results
-Version 1.1.0 maintains near-zero overhead (+0.8% latency) despite adding logic for new arguments.
-- **Pure Math:** ~17.1 ns/call
-- **Full Suite:** ~18.1 ns/call
+Versions 1.1.0/1 maintain near-zero overhead (+0.8% latency) despite adding logic for new arguments. See details in the "Benchmarking" section in [README for tests](tests/README.md).
 
 ### Reliability
-Memory Safety: Verified with long-run leak tests (0 bytes leaked over 10M iterations).
-Test Coverage: 92 validation cases (up from 51 in the previous edition).
+- **Memory Safety:** Verified with long-run leak tests (0 bytes leaked over 4M iterations).
+- **Test Coverage:** 92 validation cases (up from 51 in v1.0.2).
 
 ## License
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.

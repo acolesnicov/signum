@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.1] - 2026-01-01 (New Year Edition)
+- Corrected links and typos in documentation.
+
 ## [1.1.0] - 2025-12-31 (New Year Edition)
 - **Refactored core logic**:
     - Replaced the 27-state switch with optimized conditional branching.

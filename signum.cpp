@@ -1,6 +1,6 @@
 /*
  * signum.cpp
- * A robust, branchless implementation of the universal sign function for Python.
+ * A versatile, branchless implementation of the universal sign function for Python.
  * Version: 1.1.0
  * Released: December 31, 2025 ❄️ New Year Edition
  * Author: Alexandru Colesnicov
