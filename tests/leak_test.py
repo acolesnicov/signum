@@ -1,5 +1,6 @@
 from signum import sign
 
+from math import nan
 import os
 import psutil
 import time
@@ -12,7 +13,10 @@ def benchmark_and_leak_check():
         ("Base (int)", lambda: sign(-5)),
         ("Base (float)", lambda: sign(-5.5)),
         ("Preprocess (str)", lambda: sign("15 men", preprocess=lambda s: (float(s.split()[0]),))),
-        ("If_exc (error)", lambda: sign("error", if_exc=(0,)))
+        ("If_exc (error)", lambda: sign("error", if_exc=(-2,))),
+        ("Codeshift (error)", lambda: sign("error", codeshift=2)),
+        ("Codeshift (int)", lambda: sign(-5, codeshift=2)),
+        ("Codeshift (nan)", lambda: sign(nan, codeshift=2)),
     ]
 
     print(f"{'Test Case':<20} | {'Time (s)':<10} | {'Memory (MB)':<12}")

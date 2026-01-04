@@ -1,0 +1,14 @@
+
+Success of v1.2.0: 41 tests passed in    6.5707s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.2543s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.8600s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.9673s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.7637s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.9958s (passes: 100000; sign calls: 4100000).
+Success of v1.2.0: 41 tests passed in    6.8945s (passes: 100000; sign calls: 4100000).
+Success of v1.0.2: 41 tests passed in    7.0951s (passes: 100000; sign calls: 4100000).
+Success of v1.0.2: 41 tests passed in    7.1458s (passes: 100000; sign calls: 4100000).
+Success of v1.0.2: 41 tests passed in    7.1373s (passes: 100000; sign calls: 4100000).
+Success of v1.1.0+: 41 tests passed in    7.7583s (passes: 100000; sign calls: 4100000).
+Success of v1.1.0+: 41 tests passed in    7.3786s (passes: 100000; sign calls: 4100000).
+Success of v1.1.0+: 41 tests passed in    7.4395s (passes: 100000; sign calls: 4100000).

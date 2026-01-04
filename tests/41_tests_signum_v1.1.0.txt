@@ -1,2 +1,0 @@
-
-Success of 1.1.0+: 41 tests passed 100000 times in    7.0557s.

@@ -4,11 +4,12 @@ This directory contains validation and performance tools for the `csignum-fast` 
 
 ## Test Files
 
+* `testing.py`: An auxiliary module. Contains things common for all tests, for example, the `detect_version` function.
 * `simple_test_signum.py`: The prototype that prints test results for visual check; does not use assertions. 92 cases.
 * `test_signum.py`: The same 92 cases with assertions and `unittest`.
-* `leak_test.py`: four million-repeating loops for memory leak detection.
-* `55_test_signum.py`: 55 tests from the whole 92-tests set, which are common for version 1.0.2 and versions 1.1.0+. Repeat 100,000 times to estimate execution time. Includes tests that raise exceptions. Two results for both versions.
-* `41_test_signum.py`: **Pure Math**: 41 tests from 55 that do not raise exceptions. Repeat 100,000 times to estimate execution time. Two results for both versions.
+* `leak_test.py`: seven million-repeating loops for memory leak detection.
+* `55_test_signum.py`: 55 tests from the whole 92-tests set, which are common for version 1.0.2 and versions 1.1.0+. Repeats 100,000 times to estimate execution time. Includes tests that raise exceptions. Three results for versions 1.0.2, 1.1.0+, and 1.2.0.
+* `41_test_signum.py`: **Pure Math**: 41 tests from 55 that do not raise exceptions. Repeats 100,000 times to estimate execution time. Three results for versions 1.0.2, 1.1.0+, and 1.2.0.
 
 ## Benchmarking
 
@@ -23,13 +24,11 @@ The 0.8% overhead mentioned in the [main documentation](../README.md) was measur
 ## How to run
 
 1.  Ensure the library and dependencies are installed:
-
 ```bash
 pip install csignum-fast psutil sympy
 ```
 
 2.  Run the desired test:
-
 ```bash
 python tests/test_signum.py
 ```
@@ -38,16 +37,14 @@ python tests/test_signum.py
 
 To build and test the library locally:
 
-1.  Install build tools:
-
+1.  Install build tools and dependencies:
 ```bash
 pip install build setuptools psutil sympy
 ```
 
-2.  Install in editable mode from the project root:
-
+2.  Install from the project root:
 ```bash
-pip install -e .
+pip install .
 ```
 
 3.  Run any test file from the `tests/` directory.

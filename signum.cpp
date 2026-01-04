@@ -1,25 +1,72 @@
 /*
  * signum.cpp
- * A versatile, branchless implementation of the universal sign function for Python.
- * Version: 1.1.0
- * Released: December 31, 2025 ❄️ New Year Edition
+ * A versatile, branchless, high-performance implementation of the universal 'sign' function for Python.
+ * Version: 1.2.0 ⊙ Gold Edition
+ * Released: January 2, 2026
  * Author: Alexandru Colesnicov
  * License: MIT
  */
 
 #include <Python.h>
 
-static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
-{
-    /* Processing arguments */
-    PyObject *x;
-    PyObject *if_exc = Py_None;
-    PyObject *preprocess = Py_None;
-    static const char *kwlist[] = {"x", "if_exc", "preprocess", NULL};
+/* Static objects for keywords (argument names) and for Python 'int(0)' */
+static PyObject *kw_if_exc     = NULL;
+static PyObject *kw_preprocess = NULL;
+static PyObject *kw_codeshift  = NULL;
+static PyObject *Py_zero       = NULL;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "O|$OO", const_cast<char**>(kwlist),
-                                     &x, &if_exc, &preprocess)) {
-        return NULL; /* Error in arguments: delegated to Python */
+/* Clearing at module  */
+static void signum_free(void *m) {
+    Py_XDECREF(kw_if_exc);
+    Py_XDECREF(kw_preprocess);
+    Py_XDECREF(kw_codeshift);
+	Py_XDECREF(Py_zero);
+}
+
+static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
+{
+    /* Check positional arguments */
+    if (nargs != 1) {
+        PyErr_Format(PyExc_TypeError, "signum.sign() takes 1 positional argument but %zd were given", nargs);
+        return NULL;
+    }
+
+    PyObject *x          = args[0];
+    PyObject *if_exc     = Py_None;
+    PyObject *preprocess = Py_None;
+	int no_codeshift = 1;
+    long c_codeshift = 0;
+
+    /* Optimization: Tell the compiler that 'no_codeshift' is strictly 0 or 1 */
+    #if __has_cpp_attribute(assume)
+        [[assume((no_codeshift == 0) || (no_codeshift == 1))]];
+    #elif defined(_MSC_VER)
+        __assume((no_codeshift == 0) || (no_codeshift == 1));
+    #elif defined(__GNUC__) || defined(__clang__)
+        if (!((no_codeshift == 0) || (no_codeshift == 1))) __builtin_unreachable();
+    #endif
+
+    /* Parse keyword-only arguments using interned strings */
+    if (kwnames != NULL) {
+        Py_ssize_t nkwargs = PyTuple_GET_SIZE(kwnames);
+        for (Py_ssize_t i = 0; i < nkwargs; i++) {
+            PyObject *key = PyTuple_GET_ITEM(kwnames, i);
+            PyObject *val = args[1 + i];
+
+            if (key == kw_codeshift) {
+                /* Convert to 'long' without checking */
+                c_codeshift = PyLong_AsLong(val);
+				if (c_codeshift == -1 && PyErr_Occurred()) return NULL;
+				no_codeshift = 0;
+            } else if (key == kw_if_exc) {
+                if_exc = val;
+            } else if (key == kw_preprocess) {
+                preprocess = val;
+            } else {
+                PyErr_Format(PyExc_TypeError, "signum.sign() got an unexpected keyword argument '%U'", key);
+                return NULL;
+            }
+        }
     }
 
     /* preprocess */
@@ -66,25 +113,23 @@ static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
     double d = PyFloat_AsDouble(x);
     if (Py_IS_NAN(d)) {
         Py_XDECREF(to_free);
-        return PyFloat_FromDouble(Py_NAN);
+        switch (no_codeshift) {
+            case 0: return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
+            case 1: return PyFloat_FromDouble(Py_NAN);
+        }
     }
     /* If it is something special, we will nevertheless try comparisons */
     if (PyErr_Occurred()) PyErr_Clear();
 
-    PyObject *zero = PyLong_FromLong(0);
-    if (!zero) { /* Memory Error? */
-        Py_XDECREF(to_free);
-        return NULL;
-    }
-
     /* Start of the ternary logic block */
-    int gt, lt, eq, res, code, self_eq;
+    int gt, lt, eq, stat_idx, self_eq;
+    long res;
 
-    gt = PyObject_RichCompareBool(x, zero, Py_GT) + 1; /* 0: Error; 1: False; 2: True */
-    code = gt;
+    gt = PyObject_RichCompareBool(x, Py_zero, Py_GT) + 1; /* 0: Error; 1: False; 2: True */
+    stat_idx = gt;
 
-    lt = PyObject_RichCompareBool(x, zero, Py_LT) + 1;
-    res = gt - lt; /* Result, if nothing special */
+    lt = PyObject_RichCompareBool(x, Py_zero, Py_LT) + 1;
+    res = (long)gt - lt; /* Result, if nothing special */
 
     /* Optimization: Tell the compiler that 'lt' is strictly within [0, 2] */
     #if __has_cpp_attribute(assume)
@@ -97,13 +142,12 @@ static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
 
     switch (lt) {
         case 0: goto error;
-        case 1: break; /* 'code == gt' is mutiplied by 'lt == 1' */
-        case 2: code = (code << 1) & 3; /* 'code == gt' is shift-mutiplied by 'lt == 2'
-                                                        and truncated mod 4 */
+        case 1: break; /* 'stat_idx == gt' is mutiplied by 'lt == 1' */
+        case 2: stat_idx = (stat_idx << 1) & 3; /* 'stat_idx == gt' is shift-mutiplied by 'lt == 2'
+                                                    and truncated mod 4 */
     }
 
-    eq = PyObject_RichCompareBool(x, zero, Py_EQ) + 1; /* Used only to process NaN and errors */
-    Py_DECREF(zero); /* Not used anymore */
+    eq = PyObject_RichCompareBool(x, Py_zero, Py_EQ) + 1; /* Used only to process NaN and errors */
 
     #if __has_cpp_attribute(assume)
         [[assume(0 <= eq && eq <= 2)]];
@@ -115,40 +159,40 @@ static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
 
     switch (eq) {
         case 0: goto error;
-        case 1: break; /* 'code == (gt * lt) & 3' is mutiplied by 'eq == 1' */
-        case 2: code = (code << 1) & 3; /* 'code == (gt * lt) & 3' is shift-mutiplied by 'eq == 2'
-                                                                   and truncated mod 4 */
+        case 1: break; /* 'stat_idx == (gt * lt) & 3' is mutiplied by 'eq == 1' */
+        case 2: stat_idx = (stat_idx << 1) & 3; /* 'stat_idx == (gt * lt) & 3' is shift-mutiplied by 'eq == 2'
+                                                   and truncated mod 4 */
     }
 
     /* Short Logic Overview:
-       - 'code == 0': Multiple 'True' flags or an error occurred. Maps to 0, 4, 8; this is 0 mod 4.
-       - 'code == 1': Triple 'False' state (1,1,1). Potential NaN; requires self-comparison.
-       - 'code == 2': Exactly one 'True' flag, no errors. Valid numeric state.
+       - 'stat_idx == 0': Multiple 'True' flags or an error occurred. Maps to 0, 4, 8; this is 0 mod 4.
+       - 'stat_idx == 1': Triple 'False' state (1,1,1). Potential NaN; requires self-comparison.
+       - 'stat_idx == 2': Exactly one 'True' flag, no errors. Valid numeric state.
     */
 
     /* Detailed Logic Overview:
        'gt', 'lt', 'eq' can be 0 for 'Error', 1 for 'False', 2 for 'True' (ternary logic).
-       'code = (gt*lt*eq) & 3'; equivalent is '(gt*lt*eq) % 4'.
-       'code' is 0:
+       'stat_idx = (gt*lt*eq) & 3'; equivalent is '(gt*lt*eq) % 4'.
+       'stat_idx' is 0:
          - if we have one, two, or three errors; then the product is 0;
            (we already processed errors in 'lt' or 'eq' directly by 'goto error;');
          - if we have two 'True' and one 'False', or three 'True'; the product is 4 or 8,
               which gives 0 (mod 4).
-       'code' is 1:
+       'stat_idx' is 1:
          - if we have triple 'False', that indicates a potential NaN, and we perform
            an additional self-comparison;
-       'code' is 2:
+       'stat_idx' is 2:
          - only if we have one 'True' and two 'False': it's a valid number */
 
     #if __has_cpp_attribute(assume)
-        [[assume(0 <= code && code <= 2)]];
+        [[assume(0 <= stat_idx && stat_idx <= 2)]];
     #elif defined(_MSC_VER)
-        __assume(0 <= code && code <= 2);
+        __assume(0 <= stat_idx && stat_idx <= 2);
     #elif defined(__GNUC__) || defined(__clang__)
-        if (!(0 <= code && code <= 2)) __builtin_unreachable();
+        if (!(0 <= stat_idx && stat_idx <= 2)) __builtin_unreachable();
     #endif
 
-    switch (code) {
+    switch (stat_idx) {
         case 0: goto error;
         case 1: { /* possible NaN '(False, False, False)' */
             self_eq = PyObject_RichCompareBool(x, x, Py_EQ);
@@ -166,16 +210,19 @@ static PyObject *signum_sign(PyObject *module, PyObject *args, PyObject *kwds)
                     Py_XDECREF(to_free);
                     return NULL;
                 }
-                case  0: {
+                case  0: { /* NaN: not equal to itself */
                     Py_XDECREF(to_free);
-                    return PyFloat_FromDouble(Py_NAN); /* NaN: not equal to itself */
+                    switch (no_codeshift) {
+                        case 0: return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
+                        case 1: return PyFloat_FromDouble(Py_NAN);
+                    }
                 }
                 case  1: goto error; /* Not a NaN: equals to itself; not comparable to 0 */
             }
         }
         case 2: {
             Py_XDECREF(to_free);
-            return PyLong_FromLong((long)res);
+            return PyLong_FromLong(res + c_codeshift);
         }
     }
     goto error;
@@ -188,6 +235,14 @@ error:
         Py_INCREF(item);
         Py_XDECREF(to_free);
         return item;
+    }
+
+    switch (no_codeshift) {
+        case 0: {
+            PyErr_Clear();
+            return PyLong_FromLong(c_codeshift - 2); /* -2 is numeric stat_idx for detectable error */
+        }
+        case 1: break;
     }
 
     if (PyErr_Occurred()) {
@@ -247,20 +302,39 @@ error:
 
 /* List of implemented methods */
 static PyMethodDef SignumMethods[] = {
-    {"sign", (PyCFunction)signum_sign, METH_VARARGS | METH_KEYWORDS, "Return the sign of x: -1, 0, 1, or NaN."},
+    {"sign", (PyCFunction)signum_sign, METH_FASTCALL | METH_KEYWORDS, "Return the sign of x: -1, 0, 1, or NaN."},
     {NULL, NULL, 0, NULL} /* Stop-string */
 };
 
 /* Module description */
 static struct PyModuleDef signummodule = {
     PyModuleDef_HEAD_INIT,
-    "signum",  /* Module name for import */
-    "Fast signum implementation with ternary logic.",
+    "signum",
+    "High-performance sign function for Python.",
     -1,
-    SignumMethods
+    SignumMethods,
+    NULL, NULL, NULL,
+    signum_free
 };
 
 /* Module initialization */
 PyMODINIT_FUNC PyInit_signum(void) {
-    return PyModule_Create(&signummodule);
+    PyObject *m = PyModule_Create(&signummodule);
+    if (m == NULL) return NULL;
+
+    /* Create interned strings */
+    kw_if_exc     = PyUnicode_InternFromString("if_exc");
+    kw_preprocess = PyUnicode_InternFromString("preprocess");
+    kw_codeshift  = PyUnicode_InternFromString("codeshift");
+
+    /* Create static Pyhtonic int(0) */
+    Py_zero = PyLong_FromLong(0); 
+
+    if (!kw_if_exc || !kw_preprocess || !kw_codeshift || !Py_zero) {
+        return NULL; /* No memory */
+    }
+
+    /* Adding attribute 'signum.__version__' */
+	PyModule_AddStringConstant(m, "__version__", "1.2.0");
+    return m;
 }

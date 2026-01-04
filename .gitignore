@@ -1,6 +1,6 @@
 build/
 dist/
-test_old/
+test_*/
 venv/
 env/
 __pycache__/

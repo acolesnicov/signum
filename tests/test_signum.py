@@ -1,26 +1,32 @@
-try:
-    from signum import sign
+from signum import sign
 
-    from math import nan, isnan, inf
-    import re
-    import sys
-    import unittest
-except ImportError as e:
-    print(e)
-    print("To pass these signum tests, you should have 'csignum-fast' module installed")
-    print("Terminated: no tests passed")
-    exit(1)
+from testing import *
+# Local names for imported entities
+_SHORT_SIMPLE_TEST    = SHORT_SIMPLE_TEST
+_EPS                  = EPS
+_UTF8                 = UTF8
+_PIRATES              = PIRATES
+_numeric_finder       = numeric_finder
+_file_name            = file_name
+_get_passes           = get_passes
+_n_extract            = n_extract
+_c_prep               = c_prep
+_MyNumber             = MyNumber
+_ExplodingNumber      = ExplodingNumber
+_NotImplementedNumber = NotImplementedNumber
+_detect_version       = detect_version
+_trace                = trace
+_success              = success
+_open_devnull         = open_devnull
+_close_devnull        = close_devnull
+_OutputControl        = OutputControl
 
-UTF8 = 'utf-8'
+from math import nan, isnan, inf
+import re
+import sys
+import unittest
 
 class TestSignum(unittest.TestCase):
-
-    EPS = 1e-9
-
-    def trace(self, pcnt, cnt, scnt, what):
-        delta = cnt - pcnt
-        pl = 's' if delta > 1 else ' '
-        self.buffer.append(f"{delta:2} test{pl} for Sec. {scnt:2}: {what} passed, total {cnt:3} tests passed")
 
     def test_sign(self):
         self.buffer = []
@@ -33,20 +39,20 @@ class TestSignum(unittest.TestCase):
         self.assertEqual(sign(0), 0); counter += 1
         self.assertEqual(sign(1), 1); counter += 1
         self.assertEqual(sign(5), 1); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "'int'")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="'int'"))
 
         # ------ bool
         s_cnt += 1; prev_counter = counter
         self.assertEqual(sign(True), 1); counter += 1
         self.assertEqual(sign(False), 0); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "'bool'")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="'bool'"))
 
         # ------ big numbers
         s_cnt += 1; prev_counter = counter
         self.assertEqual(sign(10**1000), 1); counter += 1
         self.assertEqual(sign(-10**1000), -1); counter += 1
         self.assertEqual(sign(10**1000-10**1000), 0); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "big 'int'")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="big 'int'"))
 
         # --- float
         s_cnt += 1; prev_counter = counter
@@ -55,26 +61,26 @@ class TestSignum(unittest.TestCase):
         self.assertEqual(sign(0.0), 0); counter += 1
         self.assertEqual(sign(1.0), 1); counter += 1
         self.assertEqual(sign(5.0), 1); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "'float'")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="'float'"))
 
         # ------ -0.0 and +0.0
         s_cnt += 1; prev_counter = counter
         self.assertEqual(sign(float('-0.0')), 0); counter += 1
         self.assertEqual(sign(float('+0.0')), 0); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "±0.0")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="±0.0"))
 
         # ------ -inf and inf
         s_cnt += 1; prev_counter = counter
         self.assertEqual(sign(-inf), -1); counter += 1
         self.assertEqual(sign(inf), 1); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "infinity")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="infinity"))
 
         # ------ -nan (the same as nan), nan
         s_cnt += 1; prev_counter = counter
         self.assertTrue(isnan(sign(float('-nan')))); counter += 1
         self.assertTrue(isnan(sign(nan))); counter += 1
         self.assertTrue(isnan(sign(0.0*nan))); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "NaN")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="NaN"))
 
         # --- Fraction
         try:
@@ -91,7 +97,7 @@ class TestSignum(unittest.TestCase):
             self.assertEqual(sign(Fraction(0, 2)), 0); counter += 1
             self.assertEqual(sign(Fraction(1, 2)), 1); counter += 1
             self.assertEqual(sign(Fraction(5, 2)), 1); counter += 1
-            self.trace(prev_counter, counter, s_cnt, "'Fraction'")
+            self.buffer.append(_trace(prev_counter, counter, s_cnt, what="'Fraction'"))
 
         # --- Decimal
         try:
@@ -108,12 +114,12 @@ class TestSignum(unittest.TestCase):
             self.assertEqual(sign(Decimal(0.0)), 0); counter += 1
             self.assertEqual(sign(Decimal(1.5)), 1); counter += 1
             self.assertEqual(sign(Decimal(5.5)), 1); counter += 1
-            self.trace(prev_counter, counter, s_cnt, "'Decimal'")
+            self.buffer.append(_trace(prev_counter, counter, s_cnt, what="'Decimal'"))
 
             # ------ Decimal NaN
             s_cnt += 1; prev_counter = counter
             self.assertTrue(isnan(sign(Decimal('NaN')))); counter += 1
-            self.trace(prev_counter, counter, s_cnt, "Decimal NaN")
+            self.buffer.append(_trace(prev_counter, counter, s_cnt, what="Decimal NaN"))
 
         # --- sympy
         try:
@@ -130,96 +136,62 @@ class TestSignum(unittest.TestCase):
             s_cnt += 1; prev_counter = counter
             self.assertEqual(sign(val), -1); counter += 1
             self.assertEqual(sign(sympy.Rational(3, 4)), 1); counter += 1
-            self.trace(prev_counter, counter, s_cnt, "sympy")
+            self.buffer.append(_trace(prev_counter, counter, s_cnt, what="sympy"))
 
             # ------ sympy.nan
             s_cnt += 1; prev_counter = counter
             self.assertTrue(isnan(sign(sympy.nan))); counter += 1
-            self.trace(prev_counter, counter, s_cnt, "sympy.nan")
+            self.buffer.append(_trace(prev_counter, counter, s_cnt, what="sympy.nan"))
 
         # --- New custom class (testing possible future extentions)
         #     This class has no __float__ that tests one subtle branch in the C++ code
-        class MyNumber: # __float__ is absent
-            def __init__(self, value):
-                self.value = value
-            def __gt__(self, other):
-                return self.value > other
-            def __lt__(self, other):
-                return self.value < other
-            def __eq__(self, other):
-                return self.value == other
-            def __repr__(self):
-                return f'MyNumber({self.value})'
-
         s_cnt += 1; prev_counter = counter
-        self.assertEqual(sign(MyNumber(-5)), -1); counter += 1
-        self.assertEqual(sign(MyNumber(-1)), -1); counter += 1
-        self.assertEqual(sign(MyNumber(0)), 0); counter += 1
-        self.assertEqual(sign(MyNumber(1)), 1); counter += 1
-        self.assertEqual(sign(MyNumber(5)), 1); counter += 1
+        self.assertEqual(sign(_MyNumber(-5)), -1); counter += 1
+        self.assertEqual(sign(_MyNumber(-1)), -1); counter += 1
+        self.assertEqual(sign(_MyNumber(0)), 0); counter += 1
+        self.assertEqual(sign(_MyNumber(1)), 1); counter += 1
+        self.assertEqual(sign(_MyNumber(5)), 1); counter += 1
         with self.assertRaisesRegex(TypeError, r'signum\.sign: invalid argument `MyNumber\(nan\)`'):
-            sign(MyNumber(nan))
+            sign(_MyNumber(nan))
         counter += 1
-        self.trace(prev_counter, counter, s_cnt, "new custom class")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="new custom class"))
 
         # Testing inappropriate arguments and types (non-scalar, non-comparable, etc.)
 
-        # --- Invalid number of positional arguments (0, 0 with keys, 2, 3, 4)
+        # --- Invalid number of positional arguments (0, 0 with keys, 2, 3, 4, 5); invalid keyword
         s_cnt += 1; prev_counter = counter
-        with self.assertRaisesRegex(TypeError, r"function missing required argument 'x' \(pos 1\)"):
+        with self.assertRaisesRegex(TypeError, r"signum.sign\(\) takes 1 positional argument but 0 were given"):
             sign()
         counter += 1
-        with self.assertRaisesRegex(TypeError, r"function missing required argument 'x' \(pos 1\)"):
+        with self.assertRaisesRegex(TypeError, r"signum.sign\(\) takes 1 positional argument but 0 were given"):
             sign(preprocess=lambda a: (float(a),), if_exc=None)
         counter += 1
-        with self.assertRaisesRegex(TypeError, r'function takes at most 1 positional argument \(2 given\)'):
+        with self.assertRaisesRegex(TypeError, r'signum.sign\(\) takes 1 positional argument but 2 were given'):
             sign(-1, 0)
         counter += 1
-        with self.assertRaisesRegex(TypeError, r'function takes at most 1 positional argument \(3 given\)'):
+        with self.assertRaisesRegex(TypeError, r'signum.sign\(\) takes 1 positional argument but 3 were given'):
             sign(-1, 0, 1)
         counter += 1
-        with self.assertRaisesRegex(TypeError, r'function takes at most 3 arguments \(4 given\)'):
-            sign(-1, 0, 1, 5)
+        with self.assertRaisesRegex(TypeError, r'signum.sign\(\) takes 1 positional argument but 4 were given'):
+            sign(-1, 0, 1, 4)
         counter += 1
-        self.trace(prev_counter, counter, s_cnt, "invalid number of arguments")
+        with self.assertRaisesRegex(TypeError, r'signum.sign\(\) takes 1 positional argument but 5 were given'):
+            sign(-1, 0, 1, 4, 5)
+        counter += 1
+        with self.assertRaisesRegex(TypeError, r"signum.sign\(\) got an unexpected keyword argument 'code_shift'"):
+            sign(5.0, code_shift=2)
+        counter += 1
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="invalid number of arguments"))
 
         # --- ExplodingNumber, NotImplementedNumber
-        class ExplodingNumber: # Instead of reach comprisons, raises exceptions; __float__ explodes also
-            def __init__(self, value):
-                self.value = value
-            def __gt__(self, other):
-                raise RuntimeError("Boom!")
-            def __lt__(self, other):
-                raise RuntimeError("Boom!")
-            def __eq__(self, other):
-                raise RuntimeError("Boom!")
-            def __float__(self):
-                raise RuntimeError("Boom!")
-            def __repr__(self):
-                return f'ExplodingNumber({self.value})'
-
-        class NotImplementedNumber: # Stubs for future implemetation; __float__ is implemented
-            def __init__(self, value):
-                self.value = value
-            def __gt__(self, other):
-                return NotImplemented
-            def __lt__(self, other):
-                return NotImplemented
-            def __eq__(self, other):
-                return NotImplemented
-            def __float__(self):
-                return float(self.value)
-            def __repr__(self):
-                return f'NotImplementedNumber({self.value})'
-
         s_cnt += 1; prev_counter = counter
         with self.assertRaisesRegex(TypeError, r'signum.sign: invalid argument `ExplodingNumber\(-3\.14\)`'):
-            sign(ExplodingNumber(-3.14))
+            sign(_ExplodingNumber(-3.14))
         counter += 1
         with self.assertRaisesRegex(TypeError, r'signum.sign: invalid argument `NotImplementedNumber\(-3\.14\)`'):
-            sign(NotImplementedNumber(-3.14))
+            sign(_NotImplementedNumber(-3.14))
         counter += 1
-        self.trace(prev_counter, counter, s_cnt, "Exploding and Not Implemented numbers")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="Exploding and Not Implemented numbers"))
 
         # --- None, str, complex, list, set
         tests = [(r"`None`", None), (r"`'5\.0'`", '5.0'), (r"`'nan'`", 'nan'),
@@ -234,54 +206,40 @@ class TestSignum(unittest.TestCase):
                                             r'signum\.sign: invalid argument ' + msg):
                     sign(obj)
                 counter += 1
-        self.trace(prev_counter, counter, s_cnt, "inappropriate types")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="inappropriate types"))
 
-        # Testing additional key arguments (preprocess=, is_exc=, both)
+        # Testing additional key arguments (preprocess=, is_exc=, both, codeshift=, combinations)
 
         # --- preprocess key, simple argument replacement, string conversion
         s_cnt += 1; prev_counter = counter
         self.assertEqual(sign('5.0', preprocess=lambda a: (float(a),)), 1); counter += 1
         self.assertTrue(isnan(sign('nan', preprocess=lambda a: (float(a),)))); counter += 1
         self.assertEqual(sign(-18, preprocess=lambda a: (float(a),)), -1); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess with simple str replacement")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess with simple str replacement"))
 
         # --- preprocess key, argument replacement, treat small number as zero
         s_cnt += 1; prev_counter = counter
         tests = [(-1, -1), (0, 0), (-.187e-17, 0), (5.0, 1)]
         for x, y in tests:
-            self.assertEqual(sign(x, preprocess=lambda a: (0 if abs(a) < self.EPS else a,)), y);  counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess treating small number as zero")
+            self.assertEqual(sign(x, preprocess=lambda a: (0 if abs(a) < _EPS else a,)), y);  counter += 1
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess treating small number as zero"))
 
         # --- preprocess key, replace only string argument, extract number from string
         s_cnt += 1; prev_counter = counter
-        numeric_finder = re.compile(r"[-+]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][-+]?\d+)?")
-
-        def n_extract(s):
-            if isinstance(s, str):
-                match = numeric_finder.search(s)
-                return (float(match.group()),) if match else None
-            return None
-
-        self.assertEqual(sign("15 men on the dead man's chest", preprocess=n_extract), 1); counter += 1
-        self.assertEqual(sign('Temperature is -.12e+02 °C', preprocess=n_extract), -1); counter += 1
+        self.assertEqual(sign(_PIRATES, preprocess=_n_extract), 1); counter += 1
+        self.assertEqual(sign('Temperature is -.12e+02 °C', preprocess=_n_extract), -1); counter += 1
         with self.assertRaisesRegex(TypeError, r"signum.sign: invalid argument `'error'` \(type 'str'\)"):
-            sign('error', preprocess=n_extract)
+            sign('error', preprocess=_n_extract)
         counter += 1
-        self.assertEqual(sign(123, preprocess=n_extract), 1); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess extracting numbers from str")
+        self.assertEqual(sign(123, preprocess=_n_extract), 1); counter += 1
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess extracting numbers from str"))
 
         # --- preprocess key, replace result, permits complex arguments
         s_cnt += 1; prev_counter = counter
         tests = [(-1+1j, '(-0.7071067811865475+0.7071067811865475j)'), (-18.4, '-1')]
-
-        def c_prep(z):
-            if z == 0 or not isinstance(z, complex): return None
-            # complex z != 0
-            return (0, z/abs(z))
-
         for x, y in tests:
-            self.assertEqual(str(sign(x, preprocess=c_prep)), y); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess permitting complex arguments")
+            self.assertEqual(str(sign(x, preprocess=_c_prep)), y); counter += 1
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess permitting complex arguments"))
 
         # --- preprocess key, replace result, float result for 'float' and 'Decimal', sign recursion
         s_cnt += 1; prev_counter = counter
@@ -289,15 +247,15 @@ class TestSignum(unittest.TestCase):
         for x, y, t in tests:
             self.assertEqual((s := sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None)), y)
             self.assertIsInstance(s, t); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess with float result and sign recursion")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess with float result and sign recursion"))
 
         # --- preprocess key, replace result or argument, treat small number as zero differently
         s_cnt += 1; prev_counter = counter
         tests = [(-1, -1), (0, 0), (-.187e-17, 0), (5.0, 1)]
-        ppl = lambda x: (x, 0) if abs(x) < self.EPS else (x,)
+        ppl = lambda x: (x, 0) if abs(x) < _EPS else (x,)
         for x, y in tests:
             self.assertEqual(sign(x, preprocess=ppl), y); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "preprocess replacing result or argument")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="preprocess replacing result or argument"))
 
         # --- if_exc key (exception safety)
         s_cnt += 1; prev_counter = counter
@@ -310,7 +268,7 @@ class TestSignum(unittest.TestCase):
         for x, y in tests:
             self.assertEqual(repr(sign(x, if_exc=(repl[flag],))), y); counter += 1
             flag = (flag + 1) % nrepl
-        self.trace(prev_counter, counter, s_cnt, "if_exc key")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="if_exc key"))
 
         # --- both preprocess and if_exc key
         s_cnt += 1; prev_counter = counter
@@ -319,20 +277,52 @@ class TestSignum(unittest.TestCase):
         for x, y, t in tests:
             self.assertEqual(str(s := sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,))), y)
             self.assertIsInstance(s, t); counter += 1
-        self.trace(prev_counter, counter, s_cnt, "both preprocess and if_exc")
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="both preprocess and if_exc"))
 
-        self.buffer.append(f'\nSuccess: {counter} tests passed in {s_cnt} sections.\n')
+        # codeshift and combinations
+        s_cnt += 1; prev_counter = counter
+        self.assertEqual(sign('error', codeshift=2), 0); counter += 1
+        self.assertEqual(sign(-5, codeshift=2), 1); counter += 1
+        self.assertEqual(sign(0, codeshift=2), 2); counter += 1
+        self.assertEqual(sign(5, codeshift=2), 3); counter += 1
+        self.assertEqual(sign(nan, codeshift=2), 4); counter += 1
+        self.assertEqual(sign('error', if_exc=(13,), codeshift=2), 13); counter += 1
+        self.assertEqual(sign(-5, if_exc=(13,), codeshift=2), 1); counter += 1
+        self.assertEqual(sign(0, if_exc=(13,), codeshift=2), 2); counter += 1
+        self.assertEqual(sign(5, if_exc=(13,), codeshift=2), 3); counter += 1
+        self.assertEqual(sign(nan, if_exc=(13,), codeshift=2), 4); counter += 1
+        self.assertEqual(sign('error', preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2), 0); counter += 1
+        self.assertEqual(sign(-1, preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2), 1); counter += 1
+        self.assertEqual(sign(0, preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2), 2); counter += 1
+        self.assertEqual(sign(-1.87e-18, preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2), 2); counter += 1
+        self.assertEqual(sign(5.0, preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2), 3); counter += 1
+        self.assertEqual(sign('error', preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1), -1); counter += 1
+        self.assertEqual((s := sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1)), -1.0)
+        self.assertIsInstance(s, float); counter += 1
+        self.assertEqual((s := sign(0.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1)), 0.0)
+        self.assertIsInstance(s, float); counter += 1
+        self.assertEqual(sign(0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1), 1); counter += 1
+        self.assertEqual(sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1), 2); counter += 1
+        self.assertTrue(isnan(sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1))); counter += 1
+        self.assertEqual(sign('error', preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1), 13); counter += 1
+        self.assertEqual((s := sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1)), -1.0)
+        self.assertIsInstance(s, float); counter += 1
+        self.assertEqual((s := sign(0.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1)), 0.0)
+        self.assertIsInstance(s, float); counter += 1
+        self.assertEqual(sign(0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1), 1); counter += 1
+        self.assertEqual(sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1), 2); counter += 1
+        self.assertTrue(isnan(sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1))); counter += 1
+        self.buffer.append(_trace(prev_counter, counter, s_cnt, what="codeshift and key combinations"))
+
+        self.buffer.append(f'\n{_success(counter, s_cnt=s_cnt)}\n')
         print('\n'.join(self.buffer), flush=True)
 
 if __name__ == '__main__':
-    original_stdout_params = {'encoding': sys.stdout.encoding, 'errors': sys.stdout.errors}
-    original_stderr_params = {'encoding': sys.stderr.encoding, 'errors': sys.stderr.errors}
     # Switch sys.stdout and sys.stderr to 'utf-8' encoding
-    sys.stdout.reconfigure(encoding=UTF8)
-    sys.stderr.reconfigure(encoding=UTF8)
+    outflow_saver = _OutputControl()
+    outflow_saver.set_utf8()
 
     unittest.main()
 
     # Restore stdout and stderr
-    sys.stdout.reconfigure(**original_stdout_params)
-    sys.stderr.reconfigure(**original_stderr_params)
+    outflow_saver.reset_from_utf8()
