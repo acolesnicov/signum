@@ -2,10 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.2.0] - 2026-01-02 (Gold Edition)
+## [1.2.0] - 2026-01-04 (Gold Edition)
 - Added a new keyword parameter `codeshift` to use `sign` as a 5-way switch.
 - Documentation extended correspondingly.
-- Added new tests (now ??? validation cases).
+- Added new tests (now 121 validation cases).
 - Arguments are now processed with `METH_FASTCALL`.
 - String constants and the comparison base (Python `int(0)`) are now kept as static data created at module initialization.
 

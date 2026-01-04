@@ -1,43 +1,30 @@
 from signum import sign
 
-from testing import *
-# Local names for imported entities
-_SHORT_SIMPLE_TEST    = SHORT_SIMPLE_TEST
-_EPS                  = EPS
-_UTF8                 = UTF8
-_PIRATES              = PIRATES
-_numeric_finder       = numeric_finder
-_file_name            = file_name
-_get_passes           = get_passes
-_n_extract            = n_extract
-_c_prep               = c_prep
-_MyNumber             = MyNumber
-_ExplodingNumber      = ExplodingNumber
-_NotImplementedNumber = NotImplementedNumber
-_detect_version       = detect_version
-_trace                = trace
-_success              = success
-_open_devnull         = open_devnull
-_close_devnull        = close_devnull
-_OutputControl        = OutputControl
+from testing import SHORT_SIMPLE_TEST, SST_DICT, get_passes, set_high_priority, detect_version, success, \
+                    open_devnull, close_devnull, OutputUTF8, \
+                    EPS as _EPS, PIRATES as _PIRATES, n_extract as _n_extract, c_prep as _c_prep, \
+                    MyNumber as _MyNumber, ExplodingNumber as _ExplodingNumber, \
+                    NotImplementedNumber as _NotImplementedNumber, trace as _trace 
 
 from decimal import Decimal
 from fractions import Fraction
 from math import nan, inf
-import os
-import re
 import sympy
 import sys
 import time
 
-MAX_PASSES = _get_passes(__file__)
+MAX_PASSES = get_passes(__file__)
+_SST = min(SHORT_SIMPLE_TEST, SST_DICT.get(detect_version(), 'default'))
 
-outflow_saver = _OutputControl()
-outflow_saver.set_utf8()
+outflows = OutputUTF8()
+outflows.set_utf8()
 
 start_time = None
 out_test   = None
 
+print(f'***** Test: {__file__}')
+print(f'MAX_PASSES: {MAX_PASSES}')
+print(f'*** {set_high_priority()} ***\n')
 for _ in range(MAX_PASSES + 1):
     s_cnt = 0
     counter = 0
@@ -160,7 +147,7 @@ for _ in range(MAX_PASSES + 1):
     print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
     s_cnt += 1; prev_counter = counter
-    new_test = '0 with keys, ' if _SHORT_SIMPLE_TEST > 0 else ''
+    new_test = '0 with keys, ' if _SST > 0 else ''
     print(f"\n{s_cnt:2} --- invalid number of positional arguments (0, {new_test}2, 3, 4)", file=out_test)
     try:
         print("sign():", sign(), file=out_test)
@@ -169,7 +156,7 @@ for _ in range(MAX_PASSES + 1):
     finally:
         counter += 1
 
-    if _SHORT_SIMPLE_TEST > 0: # This test is for v1.1.0+ only
+    if _SST > 0: # This test is for v1.1.0+ only
         try:
             print("sign(preprocess=lambda a: (float(a),), if_exc=None):",
                   sign(preprocess=lambda a: (float(a),), if_exc=None), file=out_test)
@@ -248,7 +235,7 @@ for _ in range(MAX_PASSES + 1):
 
     # New options since version 1.1.0; skip these tests for v1.0.2
 
-    if _SHORT_SIMPLE_TEST > 0: # v1.1.0+
+    if _SST > 0: # v1.1.0+
         s_cnt += 1; prev_counter = counter
         print(f'\n{s_cnt:2} --- preprocess key, simple argument replacement, string conversion', file=out_test)
         tests = ['5.0', 'nan', -18]
@@ -366,8 +353,9 @@ for _ in range(MAX_PASSES + 1):
 
         print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
-    if _SHORT_SIMPLE_TEST > 1: # v1.2.0+
-        
+    # New options since version 1.2.0; skip these tests for v1.0.2, v1.1.0+
+
+    if _SST > 1: # v1.2.0+
         s_cnt += 1; prev_counter = counter
         print(f"\n{s_cnt:2} --- codeshift and key combinations", file=out_test)
         tests = ['error', -5, 0, 5, nan]
@@ -405,14 +393,13 @@ for _ in range(MAX_PASSES + 1):
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()
         # Block printing
-        sys.stdout.flush(); sys.stderr.flush()
-        out_test = _open_devnull()
+        out_test = open_devnull()
 
 # Finalize out_test
-_close_devnull(out_test)
+close_devnull(out_test)
 out_test = None
 
-print(f'\n{_success(counter, s_cnt=s_cnt, start_time=start_time, passes=MAX_PASSES)}')
+print(f'\n{success(counter, s_cnt=s_cnt, start_time=start_time, passes=MAX_PASSES)}')
 
 # Restore stdout and stderr
-outflow_saver.reset_from_utf8()
+outflows.reset_from_utf8()

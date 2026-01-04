@@ -1,9 +1,12 @@
 from signum import sign
+from testing import get_passes, set_high_priority, success
 
 from math import nan
 import os
 import psutil
 import time
+
+MAX_PASSES = get_passes(__file__)
 
 def benchmark_and_leak_check():
     process = psutil.Process(os.getpid())
@@ -20,15 +23,15 @@ def benchmark_and_leak_check():
     ]
 
     print(f"{'Test Case':<20} | {'Time (s)':<10} | {'Memory (MB)':<12}")
-    print("-" * 50)
+    print("-" * 53)
 
     for name, func in test_cases:
         # Before
         start_mem = process.memory_info().rss / 1024 / 1024
         start_time = time.perf_counter()
 
-        # Main loop (1 mln calls)
-        for _ in range(1_000_000):
+        # Main loop (MAX_PASSES calls)
+        for _ in range(MAX_PASSES):
             func()
 
         # After
@@ -41,6 +44,12 @@ def benchmark_and_leak_check():
         print(f"{name:<20} | {duration:>9.4f} | {end_mem:>10.2f} ({mem_diff:+.2f})")
 
 if __name__ == "__main__":
-    for _ in range(1_000_000): # Warm up (get libraries)
+    
+    print(f'***** Test: {__file__}')
+    print(f'MAX_PASSES: {MAX_PASSES}')
+    print(f'*** {set_high_priority()} ***\n')
+
+    for _ in range(MAX_PASSES): # Warm up Python
         sign(1)
     benchmark_and_leak_check()
+    print(f'\n{success(7, passes=MAX_PASSES)}')

@@ -1,8 +1,8 @@
 /*
  * signum.cpp
- * A versatile, branchless, high-performance implementation of the universal 'sign' function for Python.
+ * High-performance, versatile implementation of the universal 'sign' function for Python
  * Version: 1.2.0 ⊙ Gold Edition
- * Released: January 2, 2026
+ * Released: January 4, 2026
  * Author: Alexandru Colesnicov
  * License: MIT
  */

@@ -1,10 +1,13 @@
 import os
+import platform
+import psutil
 import re
 import sys
 import time
 
 __all__ = [
            'SHORT_SIMPLE_TEST',
+           'SST_DICT',
            'EPS',
            'UTF8',
            'PIRATES',
@@ -16,22 +19,24 @@ __all__ = [
            'MyNumber',
            'ExplodingNumber',
            'NotImplementedNumber',
+           'set_high_priority',
            'detect_version',
            'trace',
            'success',
            'open_devnull',
            'close_devnull',
-           'OutputControl',
+           'OutputUTF8',
           ]
           
 ### Tested entities
 
 ## Constants
 
-# Restriction for simple_tests_signum.py
+# Restriction for simple_tests_signum.py; set it MANUALLY
 SHORT_SIMPLE_TEST = 2 # 0: pass only tests common with v1.0.2 to compare timing
                       # 1: pass only tests common with v1.1.0 (this includes v1.0.2)
                       # 2: pass all tests (current v1.2.0)
+SST_DICT          = {'1.0.2': 0, '1.1.0+': 1, '1.2.0': 2, 'default': 2} # Outputs of detect_version() vs restrictions
 
 EPS = 1e-9
 
@@ -61,14 +66,14 @@ def get_passes(file_path):
 
 ## Functions used to preprocess
 
-# Number extraction from str
+# Number extraction from str for preprocess
 def n_extract(s):
     if isinstance(s, str):
         match = numeric_finder.search(s)
         return (float(match.group()),) if match else None
     return None
 
-# sign(complex) with recursion
+# sign(complex) with recursion for preprocess
 def c_prep(z):
     if z == 0 or not isinstance(z, complex): return None
     # complex z != 0
@@ -118,6 +123,18 @@ class NotImplementedNumber: # Stubs for future implemetation; __float__ is imple
 
 ### Service entities
 
+# High process priority for best benchmarking
+def set_high_priority():
+    try:
+        p = psutil.Process(pid := os.getpid())
+        if (syst := platform.system()) == "Windows":
+            p.nice(psutil.HIGH_PRIORITY_CLASS)
+        else: # Linux/MacOS
+            p.nice(-10) # Priority -10 needs rights!
+        return f'{syst}: high priority for process {pid} was successfully set'
+    except Exception as e: # Not enough rights, or something else came bad: ignore
+        return f'{syst}: cannot set high priority for  process {pid}, got `{str(e)}`'
+
 # Detecting version
 def detect_version():
     if not (signum_mod := sys.modules.get('signum')): # 'signum' not imported
@@ -137,13 +154,12 @@ def detect_version():
 ## Tracing
 
 def trace(pcnt, cnt, scnt, what=None):
+    ending = 's'
     delta = cnt - pcnt
-    suffix = 's' if delta != 1 else ''
-    if what:
-        # trace1: Полный отчет
-        return f"{delta:2} test{suffix:1} for Sec. {scnt:2}: {what} passed, total {cnt:3} tests passed"
-    # trace2: Лаконичный отчет (быстрее за счет отсутствия 'what')
-    return f"   --- {delta:2} test{suffix:1} for Sec. {scnt:2} passed, total {cnt:3} tests passed"
+    if delta == 1: ending = ''
+    beginning, descr = '   --- ', '' # trace without description is for simple_test_signum.py
+    if what: beginning, descr = '', f': `{what}`'
+    return f"{beginning}{delta:2} test{ending:1} for Sec. {scnt:2}{descr} passed, total {cnt:3} tests passed"
     
 def success(counter, s_cnt=None, start_time=None, passes=None):
     version = detect_version()
@@ -153,7 +169,7 @@ def success(counter, s_cnt=None, start_time=None, passes=None):
     if start_time: seconds = f' in {time.perf_counter() - start_time:>9.4f}s'
     reps = ''
     if passes: reps = f' (passes: {passes}; sign calls: {passes*counter})'
-    return f'Success of v{version}: {counter} tests{sections} passed{seconds}{reps}.' 
+    return f'Success of v{version:<6}: {counter} tests{sections} passed{seconds}{reps}.' 
 
 ## os.devnull
 
@@ -167,8 +183,8 @@ def close_devnull(f):
         finally:
             f.close()    
 
-# Class to switch sys.stdout and sys.stderr and to produce devnull
-class OutputControl:
+# Class to switch sys.stdout and sys.stderr
+class OutputUTF8:
     def __init__(self):
         self.original_stdout_params = {'encoding': sys.stdout.encoding, 'errors': sys.stdout.errors}
         self.original_stderr_params = {'encoding': sys.stderr.encoding, 'errors': sys.stderr.errors}

@@ -5,11 +5,11 @@
 ![Tests](https://img.shields.io/badge/tests-???%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
-**A versatile, high-performance C++ implementation of the universal sign function for Python.**
+**High-performance, versatile implementation of the universal 'sign' function for Python**
 
-*Released on January 3, 2026* ⊙ *Gold Edition.*
+*Released on January 4, 2026* ⊙ *Gold Edition*
 
-Version 1.2.0: Maximum speed and the third keyword argument.
+Version **1.2.0**: Maximum speed and the third keyword argument.
 
 ## Key Features
 
@@ -23,8 +23,8 @@ Version 1.2.0: Maximum speed and the third keyword argument.
     * `fractions.Fraction` and `decimal.Decimal`.
     * Any existing and future objects that support rich comparisons with numbers.
 4.  **Informative Error Handling for Easy Debugging**: Provides clear, descriptive `TypeError` messages when passed non-numeric, non-scalar, or incomparable arguments.
-5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum as for C++ extension for Python: since v1.0.0 all possibilities to increase productivity were searched and applied sistematically.
-6.  **✅ Thoroughly Tested**: Tested on ??? cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against v1.0.2 and v1.1.0+.
+5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum as for C++ extension for Python: since v1.0.0 all possibilities to increase productivity were sistematically searched and applied.
+6.  **✅ Thoroughly Tested**: Tested on 121 cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against older versions.
 7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an "Early Exit" (recursion permitted).
 8.  **🛡️ Exception safety**: The `if_exc` keyword argument allows to define a fallback value (like `None`, `math.nan`, or `-2`) instead of crashing on invalid types.
 9.  **✨ 5-way uniform result**: Use the `codeshift` keyword argument to encode all 5 possible `sign` exits (`TypeError`, -1, 0, 1, `NaN`) by subsequent integers for switching or indexing.
@@ -51,7 +51,7 @@ print(sign(Decimal("0.0"))) #  0
 ## Advanced Usage (New features since v1.1.0)
 
 ### ☢️ Attention: Contract Programming!
-For productivity reasons, keyword argument values are **not checked** by the `sign` function. Your responsibility is:
+For productivity reasons, keyword argument values are **not checked** by the `sign` function. **Your** responsibility is:
 * To pass a **`callable`** with one argument for `preprocess` (must return `None` or a `tuple`).
 * To pass a **`tuple`** for `if_exc`.
 * To pass an **`int`** for `codeshift`.
@@ -116,7 +116,7 @@ sign("not a number", if_exc=(-2,)) # Returns -2 instead of `TypeError` exception
 ```
 
 ### You can use both keyword arguments at once
-With `preprocess`, you replace arguments (or results) in specific cases, while `if_exc` prevents exceptions for all that remains.
+With `preprocess`, you replace arguments (or even results) in specific cases, while `if_exc` prevents exceptions for all that remains.
 
 ### Comfortable 5-way processing with `codeshift` keyword argument
 When innocent people lived in the heavenly world of pure mathematics, the `sign` function was **ternary**. The results were -1, 0, +1.
@@ -133,7 +133,7 @@ To catch an error, you need to write an indecently multi-layered construction `t
 
 To catch NaN, you need to write `if isnan(sign(...)):`.
 
-Only the usual results -1, 0, 1 do not cause any trouble: a cascade of `if ... elif ... else` with checks for `==`, or `match ... case ...` solve the problem.
+Only the usual results `-1, 0, 1` do not cause any trouble: a cascade of `if ... elif ... else` with checks for `==`, or `match ... case ...` solve the problem.
 
 The keyword argument `codeshift` converts `sign` into a **uniform 5-way switch**. All 5 possible `sign` results are **encoded as integers**: `TypeError` becomes -2; -1, 0, 1 remain unchanged; `NaN` is encoded by 2. The value of the `codeshift` argument, which must be an integer, is added to this code, and the resulting number is returned as the result. (Default is `codeshift=None`: usual processing).
 
@@ -168,11 +168,11 @@ function_list[sign((d := data_input), codeshift=2)](d)
 ```
 
 ###Interaction with other keyword arguments
-If there is the `if_exc` argument, it takes precedence over `codeshift`: instead of an exception, `if_exc` value is returned unchanged. `codeshift` is applied in the remaining four cases.
+If there is the `if_exc` argument, it takes precedence over `codeshift`: instead of an exception, the `if_exc` value is returned unchanged. `codeshift` is applied in the remaining four cases (the results -1, 0, 1, and `NaN`).
 
-The interaction between `preprocess` and `codeshift` is alike. If `preprocess` returns `None` or a tuple with one element `(x,)`, then everything goes as usual: `codeshift` is not about the argument, but about the result. If `preprocess` returns a tuple with two elements `(x, y)`, it takes precedence over `codeshift`, and unchanged `y` is returned as the result.
+The interaction between `preprocess` and `codeshift` is similar. If `preprocess` returns `None` or a tuple with one element `(x,)`, then everything goes as usual: `codeshift` is not about the argument, but about the result. If `preprocess` returns a tuple with two elements `(x, y)`, it takes precedence over `codeshift`, and unchanged `y` is returned as the result.
 
-The general principle is “an explicitly specified **special** case **overrides** a **more general** option”. `if_exc` is only applicable to exceptions, while `codeshift` is applicable to all results in general, so it has a lower priority. The same applies to `preprocess` with a tuple of length 2: there is only one result here, so it has priority over what changes all results.
+The general principle is “an explicitly specified **special** case **overrides** a **more general** option”. `if_exc` is only applicable to exceptions, while `codeshift` is applicable to all results in general, so `codeshift` has a lower priority. The same applies to `preprocess` returning a tuple of length 2: it defines a single specific outcome, which takes precedence over what intercepts and shifts all results and even "no-results".
 
 ## Why Gold Edition? (v1.2.0)
 
@@ -192,7 +192,7 @@ Versions 1.2.0 maintain near-zero overhead (+0.8% latency) despite adding logic 
 
 ### Reliability
 - **Memory Safety:** Verified with long-run leak tests (0 bytes leaked over 7M iterations).
-- **Test Coverage:** ??? validation cases (up from 51 in v1.0.2 and 92 in v1.1.0+).
+- **Test Coverage:** 121 validation cases (up from 51 in v1.0.2 and 92 in v1.1.0+).
 
 ## License
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/acolesnicov/signum/blob/main/LICENSE) file for details.

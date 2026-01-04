@@ -1,43 +1,23 @@
 from signum import sign
-
-from testing import *
-# Local names for imported entities
-_SHORT_SIMPLE_TEST    = SHORT_SIMPLE_TEST
-_EPS                  = EPS
-_UTF8                 = UTF8
-_PIRATES              = PIRATES
-_numeric_finder       = numeric_finder
-_file_name            = file_name
-_get_passes           = get_passes
-_n_extract            = n_extract
-_c_prep               = c_prep
-_MyNumber             = MyNumber
-_ExplodingNumber      = ExplodingNumber
-_NotImplementedNumber = NotImplementedNumber
-_detect_version       = detect_version
-_trace                = trace
-_success              = success
-_open_devnull         = open_devnull
-_close_devnull        = close_devnull
-_OutputControl        = OutputControl
+from testing import get_passes, MyNumber as _MyNumber, set_high_priority, success, OutputUTF8
 
 from decimal import Decimal
 from fractions import Fraction
 from math import nan, inf
-import os
-import re
 import sympy
-import sys
 import time
 
-MAX_PASSES = _get_passes(__file__)
+MAX_PASSES = get_passes(__file__)
 
 # Switch sys.stdout and sys.stderr to 'utf-8' encoding
-outflow_saver = _OutputControl()
-outflow_saver.set_utf8()
+outflows = OutputUTF8()
+outflows.set_utf8()
 
 start_time = None
 
+print(f'***** Test: {__file__}')
+print(f'MAX_PASSES: {MAX_PASSES}')
+print(f'*** {set_high_priority()} ***\n')
 for _ in range(MAX_PASSES + 1):
     (sign(-5))
     (sign(-1))
@@ -87,7 +67,7 @@ for _ in range(MAX_PASSES + 1):
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()
 
-print(f'{_success(41, s_cnt=None, start_time=start_time, passes=MAX_PASSES)}')
+print(f'{success(41, s_cnt=None, start_time=start_time, passes=MAX_PASSES)}\n')
 
 # Restore stdout and stderr
-outflow_saver.reset_from_utf8()
+outflows.reset_from_utf8()

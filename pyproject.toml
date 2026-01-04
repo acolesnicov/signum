@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "csignum-fast"
 version = "1.2.0"
-description = "High-performance universal sign function for Python"
+description = "High-performance, versatile implementation of the universal 'sign' function for Python"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
