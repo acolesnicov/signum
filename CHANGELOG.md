@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.1] - 2026-01-05 (Gold Edition)
+-  Fixed error in a badge.
+
 ## [1.2.0] - 2026-01-05 (Gold Edition)
 -  Added a new keyword parameter `codeshift` to use `sign` as a 5-way switch.
 -  Documentation extended correspondingly.

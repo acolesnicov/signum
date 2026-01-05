@@ -23,7 +23,7 @@ Benchmarks were conducted using the **Best-of-N** method with the `41_tests_sign
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1.0.2 | 6.6877 | - | Christmas | Base `sign(x)` | Legacy, 7.1% slower  |
 | 1.1.0+ | 7.2759 | -8.8% | New Year | preprocess=, if_exc= | Intermediate, 15.9% slower |
-| 1.2.0 | 6.2133 | +7.1% | Gold | codeshift=, max optimization | The Recommended Champion |
+| 1.2.1 | 6.2133 | +7.1% | Gold | codeshift=, max optimization | The Recommended Champion |
 
 **Efficiency Note:** The transition from v1.1.0+ to v1.2.0 resolved previous performance regressions, resulting in a 15.9% internal throughput improvement because of refined optimizations in C++ code.
 

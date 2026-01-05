@@ -2,14 +2,14 @@
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/release-Gold%20Edition-gold.svg)
-![Tests](https://img.shields.io/badge/tests-???%20passed-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-121%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
 **High-performance, versatile implementation of the universal 'sign' function for Python**
 
 *Released on January 5, 2026* ⊙ *Gold Edition*
 
-Version **1.2.0**: Maximum speed (+7.1% vs v.1.0.2 and **15.9%** vs 1.1.5), and the third keyword argument.
+Version **1.2.1**: Maximum speed (+7.1% vs v.1.0.2 and **15.9%** vs 1.1.5), and the third keyword argument.
 
 ## Key Features
 
@@ -174,21 +174,21 @@ The interaction between `preprocess` and `codeshift` is similar. If `preprocess`
 
 The general principle is “an explicitly specified **special** case **overrides** a **more general** option”. `if_exc` is only applicable to exceptions, while `codeshift` is applicable to all results in general, so `codeshift` has a lower priority. The same applies to `preprocess` returning a tuple of length 2: it defines a single specific outcome, which takes precedence over what intercepts and shifts all results and even "no-results".
 
-## Why Gold Edition? (v1.2.0)
+## Why Gold Edition? (v1.2.1)
 
 ### The Quinary Revolution
 -  **New `codeshift` Argument:** The headliner of v1.2.0. It enables effortless 5-way logic (`TypeError`, -1, 0, 1, `NaN`) without extra Python-level overhead.
 
 ### Evolution of Speed (**15.9%** faster than v1.1.5, **7.1%** faster than v1.0.2)
--  **New in v1.2.0: CPython FastCall.** Migration to `METH_FASTCALL`. This eliminated the overhead of using temporary tuple and dictionary for argument parsing.
--  **New in v1.2.0: Static Object Caching.** The comparison base (Python `int(0)`) and all keyword names are now static C-objects, pre-allocated at module load time.
+-  **New in v1.2.1: CPython FastCall.** Migration to `METH_FASTCALL`. This eliminated the overhead of using temporary tuple and dictionary for argument parsing.
+-  **New in v1.2.1: Static Object Caching.** The comparison base (Python `int(0)`) and all keyword names are now static C-objects, pre-allocated at module load time.
 -  **Since v1.1.0: Branchless Logic Remastered.** The optimized cascade of ternary switches replaced the bulky 27-way switch.
 -  **Since v1.0.0: Branchless Logic.** Our state index allows the CPU to execute core logic in a linear pipeline without conditional branching even when handling edge cases and type errors.
 
 ## 📊 Performance & Quality Assurance
 
 ### Benchmark Results
-**Gold Edition v1.2.0** delivers a **15.9%** performance boost over v1.1.5 and is **7.1%** faster than the original v1.0.2, despite the significantly expanded feature set. Detailed metrics are available "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
+**Gold Edition v1.2.1** delivers a **15.9%** performance boost over v1.1.5 and is **7.1%** faster than the original v1.0.2, despite the significantly expanded feature set. Detailed metrics are available "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
 
 *Note:* Benchmarking scripts require `psutil` (for priority management) and `sympy` (for `sympy` numeric types and `NaN` validation).
 

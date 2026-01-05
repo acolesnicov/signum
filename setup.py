@@ -16,7 +16,7 @@ class build_ext_subclass(build_ext):
 
 setup(
     name="signum",
-    version="1.2.0",
+    version="1.2.1",
     ext_modules=[Extension("signum", ["signum.cpp"])],
     cmdclass={'build_ext': build_ext_subclass},
     include_package_data=True,
