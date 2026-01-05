@@ -4,7 +4,7 @@ This directory contains validation and benchmarking tools for the `csignum-fast`
 
 ## Test Files
 
-* `testing.py`: An auxiliary module. Contains things common for all tests, for example, the `detect_version` function.
+* `testing.py`: An auxiliary module. Contains items common for all tests, for example, the `detect_version()` function.
 * `simple_test_signum.py`: The prototype that prints test results for visual check; does not use assertions. 121 cases. Works for all versions: for older versions, passes only the corresponding subset of tests.
 * `test_signum.py`: The same 121 cases with assertions and `unittest`. Current version only.
 * `leak_test.py`: seven million-repeating loops for memory leak detection. Current version only.
@@ -13,7 +13,7 @@ This directory contains validation and benchmarking tools for the `csignum-fast`
 
 ## Benchmarking
 
-Results (`*.txt`) were obtained with **Python 3.13.5 (AMD64)** on a **Lenovo ThinkPad** (processor 11th Gen Intel(R) Core(TM) i7-1165G7 @ 2.80GHz, RAM 32.0 GB) running **Windows 11 Pro 25H2** under the **"Best performance"** power plan.
+Results (`*.txt`) were obtained with **Python 3.13.5 (AMD64)** on a **Lenovo ThinkPad** (processor 11th Gen Intel® Core™ i7-1165G7 @ 2.80GHz, RAM 32.0 GB) running **Windows 11 Pro 25H2** under the **“Best performance”** power plan.
 
 For consistent results, all benchmarking scripts (except `test_signum.py`) automatically set **High Process Priority** via `psutil`.
 
@@ -23,7 +23,7 @@ Benchmarks were conducted using the **Best-of-N** method with the `41_tests_sign
 | :---: | :---: | :---: | :---: | :---: | :---: |
 | 1.0.2 | 6.6877 | - | Christmas | Base `sign(x)` | Legacy, 7.1% slower  |
 | 1.1.0+ | 7.2759 | -8.8% | New Year | preprocess=, if_exc= | Intermediate, 15.9% slower |
-| 1.2.1 | 6.2133 | +7.1% | Gold | codeshift=, max optimization | The Recommended Champion |
+| 1.2.2 | 6.2133 | +7.1% | Gold | codeshift=, max optimization | **The Recommended Champion** |
 
 **Efficiency Note:** The transition from v1.1.0+ to v1.2.0 resolved previous performance regressions, resulting in a 15.9% internal throughput improvement because of refined optimizations in C++ code.
 
@@ -44,7 +44,7 @@ or under Windows:
 python tests\test_signum.py
 python tests\test_signum.py >> tests\test_signum.txt 2>&1
 ```
-`test_signum.py` is unique: the result is printed both through `sys.stdout` (test header, section trace, final result) and `sys.stderr` (the `unittest` module output), so you need `2>&1` to catch all that in a file.
+**Note:** The `test_signum.py` script outputs to both `stdout` (headers and traces) and `stderr` (`unittest` results). To capture the complete log into a single file, use `2>&1`.
 
 ## Building from Source
 

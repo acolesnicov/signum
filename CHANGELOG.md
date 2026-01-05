@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] - 2026-01-05 (Gold Edition)
+-  Fixed documentation typos.
+
 ## [1.2.1] - 2026-01-05 (Gold Edition)
 -  Fixed error in a badge.
 

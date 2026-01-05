@@ -2,6 +2,7 @@
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/release-Gold%20Edition-gold.svg)
+![Performance](https://img.shields.io/badge/performance-+16%25%20faster-orange.svg)
 ![Tests](https://img.shields.io/badge/tests-121%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
@@ -9,7 +10,7 @@
 
 *Released on January 5, 2026* ⊙ *Gold Edition*
 
-Version **1.2.1**: Maximum speed (+7.1% vs v.1.0.2 and **15.9%** vs 1.1.5), and the third keyword argument.
+Version **1.2.2**: Maximum speed (**+7.1%** vs v.1.0.2 and **+15.9%** vs 1.1.5), and the third keyword argument.
 
 ## Key Features
 
@@ -23,9 +24,9 @@ Version **1.2.1**: Maximum speed (+7.1% vs v.1.0.2 and **15.9%** vs 1.1.5), and 
     * `fractions.Fraction` and `decimal.Decimal`.
     * Any existing and future objects that support rich comparisons with numbers.
 4.  **Informative Error Handling for Easy Debugging**: Provides clear, descriptive `TypeError` messages when passed non-numeric, non-scalar, or incomparable arguments.
-5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum as for C++ extension for Python: since v1.0.0 all possibilities to increase productivity were sistematically searched and applied.
+5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum for a C++ extension for Python: since v1.0.0 all possibilities to increase performance have been systematically searched and applied.
 6.  **✅ Thoroughly Tested**: Tested on 121 cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against older versions.
-7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an "Early Exit" (recursion permitted).
+7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an **Early Exit** (recursion permitted).
 8.  **🛡️ Exception safety**: The `if_exc` keyword argument allows to define a fallback value (like `None`, `math.nan`, or `-2`) instead of crashing on invalid types.
 9.  **✨ 5-way uniform result**: Use the `codeshift` keyword argument to encode all 5 possible `sign` exits (`TypeError`, -1, 0, 1, `NaN`) by subsequent integers for switching or indexing.
 
@@ -51,18 +52,18 @@ print(sign(Decimal("0.0"))) #  0
 ## Advanced Usage (New features since v1.1.0)
 
 ### ☢️ Attention: Contract Programming!
-For productivity reasons, keyword argument values are **not checked** by the `sign` function. **Your** responsibility is:
-* To pass a **`callable`** with one argument for `preprocess` (must return `None` or a `tuple`).
+For Performance reasons, keyword argument values are **not checked** by the `sign` function. **Your** responsibility is:
+* To pass a **`callable`** for `preprocess` (accepts one argument, returns `None` or a `tuple`).
 * To pass a **`tuple`** for `if_exc`.
 * To pass an **`int`** for `codeshift`.
-* To guarantee that **all** calculations implied by these arguments do not result in additional exceptions or faults.
+* To guarantee that **all** calculations implied by these arguments do not result in additional exceptions or crashes.
 
-*Passing incorrect values to these parameters may result in **unpredictable behavior** or **faults**.*
+*Passing incorrect values to these parameters may result in **unpredictable behavior** or **segmentation faults**.*
 
 ### ⚡ Custom Pre-processing with `preprocess`
 With `preprocess` keyword argument, you can pass a `callable` to transform the input. (Default: `preprocess=None` without preprocessing).
 
-The `callable` will be called with the positional argument of `sign`. It should support a special return protocol:
+The `callable` will be called with the positional argument of `sign`. It must support a special return protocol:
 - Return `None`: `sign` proceed with usual calculation.
 - Return `(value,)`: `sign` proceed with calculation using `value` as an argument. Why a `tuple`? Use `(None,)` to return `None` as a `value` (usually raises `TypeError`).
 - Return `(any, result)`: **Early Exit**. Immediately return `result` as the final answer of `sign`; `any` is ignored.
@@ -115,7 +116,7 @@ from signum import sign # Obligatory for all examples
 sign("not a number", if_exc=(-2,)) # Returns -2 instead of `TypeError` exception
 ```
 
-### You can use both keyword arguments at once
+### You can use two keyword arguments at once
 With `preprocess`, you replace arguments (or even results) in specific cases, while `if_exc` prevents exceptions for all that remains.
 
 ### Comfortable 5-way processing with `codeshift` keyword argument
@@ -172,25 +173,25 @@ If there is the `if_exc` argument, it takes precedence over `codeshift`: instead
 
 The interaction between `preprocess` and `codeshift` is similar. If `preprocess` returns `None` or a tuple with one element `(x,)`, then everything goes as usual: `codeshift` is not about the argument, but about the result. If `preprocess` returns a tuple with two elements `(x, y)`, it takes precedence over `codeshift`, and unchanged `y` is returned as the result.
 
-The general principle is “an explicitly specified **special** case **overrides** a **more general** option”. `if_exc` is only applicable to exceptions, while `codeshift` is applicable to all results in general, so `codeshift` has a lower priority. The same applies to `preprocess` returning a tuple of length 2: it defines a single specific outcome, which takes precedence over what intercepts and shifts all results and even "no-results".
+The general principle is “an explicitly specified **special** case **overrides** a **more general** option”. `if_exc` is only applicable to exceptions, while `codeshift` is applicable to all results in general, so `codeshift` has a lower priority. The same applies to `preprocess` returning a tuple of length 2: it defines a single specific outcome, which takes precedence over what intercepts and shifts all results and even “no-results”.
 
-## Why Gold Edition? (v1.2.1)
+## Why Gold Edition? (v1.2.2)
 
 ### The Quinary Revolution
--  **New `codeshift` Argument:** The headliner of v1.2.0. It enables effortless 5-way logic (`TypeError`, -1, 0, 1, `NaN`) without extra Python-level overhead.
+-  **New `codeshift` Argument:** The headliner of v1.2.0+. It enables effortless 5-way logic (`TypeError`, -1, 0, 1, `NaN`) without extra Python-level overhead.
 
 ### Evolution of Speed (**15.9%** faster than v1.1.5, **7.1%** faster than v1.0.2)
--  **New in v1.2.1: CPython FastCall.** Migration to `METH_FASTCALL`. This eliminated the overhead of using temporary tuple and dictionary for argument parsing.
--  **New in v1.2.1: Static Object Caching.** The comparison base (Python `int(0)`) and all keyword names are now static C-objects, pre-allocated at module load time.
+-  **New in v1.2.2: CPython FastCall.** Migration to `METH_FASTCALL`. This eliminated the overhead of using temporary tuple and dictionary for argument parsing.
+-  **New in v1.2.2: Static Object Caching.** The comparison base (Python `int(0)`) and all keyword names are now static C-objects, pre-allocated at module load time.
 -  **Since v1.1.0: Branchless Logic Remastered.** The optimized cascade of ternary switches replaced the bulky 27-way switch.
 -  **Since v1.0.0: Branchless Logic.** Our state index allows the CPU to execute core logic in a linear pipeline without conditional branching even when handling edge cases and type errors.
 
 ## 📊 Performance & Quality Assurance
 
 ### Benchmark Results
-**Gold Edition v1.2.1** delivers a **15.9%** performance boost over v1.1.5 and is **7.1%** faster than the original v1.0.2, despite the significantly expanded feature set. Detailed metrics are available "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
+**Gold Edition v1.2.2** delivers a **15.9%** performance boost over v1.1.5 and is **7.1%** faster than the original v1.0.2, despite the significantly expanded feature set. Detailed metrics are available in the “Benchmarking” section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
 
-*Note:* Benchmarking scripts require `psutil` (for priority management) and `sympy` (for `sympy` numeric types and `NaN` validation).
+**Note:** Benchmarking scripts require `psutil` (for priority management) and `sympy` (for `sympy` numeric types and `NaN` validation).
 
 ### Reliability
 -  **Memory Safety:** Verified with rigorous stress test (**0 bytes leaked over 7M iterations**).

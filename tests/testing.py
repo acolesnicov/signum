@@ -37,7 +37,7 @@ SHORT_SIMPLE_TEST = 2 # 0: pass only tests common with v1.0.2 to compare timing
                       # 1: pass only tests common with v1.1.0 (this includes v1.0.2)
                       # 2: pass all tests (current v1.2.0)
 # Outputs of detect_version() vs restrictions
-SST_DICT          = {'1.0.2': 0, '1.1.0+': 1, '1.2.0': 2, '1.2.1': 2, 'default': 2}
+SST_DICT          = {'1.0.2': 0, '1.1.0+': 1, '1.2.0': 2, '1.2.1': 2, '1.2.2': 2, 'default': 2}
 
 EPS = 1e-9
 
