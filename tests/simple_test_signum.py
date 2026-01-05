@@ -4,7 +4,7 @@ from testing import SHORT_SIMPLE_TEST, SST_DICT, get_passes, set_high_priority, 
                     open_devnull, close_devnull, OutputUTF8, \
                     EPS as _EPS, PIRATES as _PIRATES, n_extract as _n_extract, c_prep as _c_prep, \
                     MyNumber as _MyNumber, ExplodingNumber as _ExplodingNumber, \
-                    NotImplementedNumber as _NotImplementedNumber, trace as _trace 
+                    NotImplementedNumber as _NotImplementedNumber, trace as _trace
 
 from decimal import Decimal
 from fractions import Fraction
@@ -360,11 +360,11 @@ for _ in range(MAX_PASSES + 1):
         print(f"\n{s_cnt:2} --- codeshift and key combinations", file=out_test)
         tests = ['error', -5, 0, 5, nan]
         for x in tests:
-            print(f"sign({repr(x)}, codeshift=2):", 
+            print(f"sign({repr(x)}, codeshift=2):",
                   sign(x, codeshift=2), file=out_test); counter += 1
         print('   ---', file=out_test)
         for x in tests:
-            print(f"sign({repr(x)}, if_exc=(13,), codeshift=2):", 
+            print(f"sign({repr(x)}, if_exc=(13,), codeshift=2):",
                   sign(x, if_exc=(13,), codeshift=2), file=out_test); counter += 1
         print('   ---', file=out_test)
         tests = ['error', -1, 0, -.187e-17, 5.0]
@@ -375,13 +375,13 @@ for _ in range(MAX_PASSES + 1):
                   file=out_test); counter += 1
         print('   ---', file=out_test)
         tests = ['error', -5.0, 0.0, 0, 5, nan]
-        for x in tests:        
+        for x in tests:
             print(f"sign({repr(x)}, "
                   f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, "
                   f"codeshift=1):",
                   sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1), file=out_test); counter += 1
         print('   ---', file=out_test)
-        for x in tests:        
+        for x in tests:
             print(f"sign({repr(x)}, "
                   f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, "
                   f"if_exc=(13,), codeshift=1):",
@@ -389,7 +389,7 @@ for _ in range(MAX_PASSES + 1):
 
         print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
-    
+
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()
         # Block printing

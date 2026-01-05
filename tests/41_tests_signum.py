@@ -63,7 +63,7 @@ for _ in range(MAX_PASSES + 1):
     (sign(_MyNumber(0)))
     (sign(_MyNumber(1)))
     (sign(_MyNumber(5.1)))
-    
+
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()
 

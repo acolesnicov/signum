@@ -2,8 +2,8 @@
  * signum.cpp
  * High-performance, versatile implementation of the universal 'sign' function for Python
  * Version: 1.2.0 ⊙ Gold Edition
- * Released: January 4, 2026
- * Author: Alexandru Colesnicov
+ * Released: January 5, 2026
+ * Copyright (c) 2025-2026 Alexandru Colesnicov
  * License: MIT
  */
 
@@ -20,7 +20,7 @@ static void signum_free(void *m) {
     Py_XDECREF(kw_if_exc);
     Py_XDECREF(kw_preprocess);
     Py_XDECREF(kw_codeshift);
-	Py_XDECREF(Py_zero);
+    Py_XDECREF(Py_zero);
 }
 
 static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
@@ -34,7 +34,7 @@ static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t n
     PyObject *x          = args[0];
     PyObject *if_exc     = Py_None;
     PyObject *preprocess = Py_None;
-	int no_codeshift = 1;
+    int no_codeshift = 1;
     long c_codeshift = 0;
 
     /* Optimization: Tell the compiler that 'no_codeshift' is strictly 0 or 1 */
@@ -56,8 +56,8 @@ static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t n
             if (key == kw_codeshift) {
                 /* Convert to 'long' without checking */
                 c_codeshift = PyLong_AsLong(val);
-				if (c_codeshift == -1 && PyErr_Occurred()) return NULL;
-				no_codeshift = 0;
+                if (c_codeshift == -1 && PyErr_Occurred()) return NULL;
+                no_codeshift = 0;
             } else if (key == kw_if_exc) {
                 if_exc = val;
             } else if (key == kw_preprocess) {
@@ -328,13 +328,13 @@ PyMODINIT_FUNC PyInit_signum(void) {
     kw_codeshift  = PyUnicode_InternFromString("codeshift");
 
     /* Create static Pyhtonic int(0) */
-    Py_zero = PyLong_FromLong(0); 
+    Py_zero = PyLong_FromLong(0);
 
     if (!kw_if_exc || !kw_preprocess || !kw_codeshift || !Py_zero) {
         return NULL; /* No memory */
     }
 
     /* Adding attribute 'signum.__version__' */
-	PyModule_AddStringConstant(m, "__version__", "1.2.0");
+    PyModule_AddStringConstant(m, "__version__", "1.2.0");
     return m;
 }

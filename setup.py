@@ -20,4 +20,11 @@ setup(
     ext_modules=[Extension("signum", ["signum.cpp"])],
     cmdclass={'build_ext': build_ext_subclass},
     include_package_data=True,
+    install_requires=[],
+    extras_require={
+        'test': [
+            'psutil',
+            'sympy',
+        ],
+    },
 )

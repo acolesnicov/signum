@@ -1,6 +1,6 @@
-***** Test: E:\signum-project\tests\simple_test_signum.py
+***** Test: e:\signum-project\tests\simple_test_signum.py
 MAX_PASSES: 10000
-*** Windows: high priority for process 14752 was successfully set ***
+*** Windows: high priority for process 8504 was successfully set ***
 
  1 --- int
 sign(-5): -1
@@ -97,7 +97,7 @@ sign(_MyNumber(5.1)): 1
 
 15 --- ExplodingNumber, NotImplementedNumber
 - signum.sign: invalid argument `ExplodingNumber(-3.14)` (type 'ExplodingNumber'). Inner error: <class 'RuntimeError'> returned a result with an exception set
-- signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Inner error: <function NotImplementedNumber.__lt__ at 0x0000019324982CA0> returned a result with an exception set
+- signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Inner error: <function NotImplementedNumber.__lt__ at 0x000002569E392C00> returned a result with an exception set
    ---  2 tests for Sec. 15 passed, total  51 tests passed
 
 16 --- inappropriate argument types (None, str, complex, list, set)
@@ -204,4 +204,4 @@ sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else No
 sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): nan
    --- 27 tests for Sec. 25 passed, total 121 tests passed
 
-Success of v1.2.0: 121 tests from 25 sections passed in    5.7882s (passes: 10000; sign calls: 1210000).
+Success of v1.2.0 : 121 tests from 25 sections passed in    5.6995s (passes: 10000; sign calls: 1210000).

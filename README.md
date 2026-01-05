@@ -7,9 +7,9 @@
 
 **High-performance, versatile implementation of the universal 'sign' function for Python**
 
-*Released on January 4, 2026* ⊙ *Gold Edition*
+*Released on January 5, 2026* ⊙ *Gold Edition*
 
-Version **1.2.0**: Maximum speed and the third keyword argument.
+Version **1.2.0**: Maximum speed (+7.1% vs v.1.0.2 and **15.9%** vs 1.1.5), and the third keyword argument.
 
 ## Key Features
 
@@ -150,7 +150,7 @@ Everything aforementioned is summarized in the table:
 | Positive | 1 | 1 | 3 |
 | NaN | math.nan | 2 | 4 |
 
-####Code Patterns: One ~~Ring~~ Switch to Rule Them All
+#### Code Patterns: One ~~Ring~~ Switch to Rule Them All
 ```python
 # The golden match
 from signum import sign # Obligatory for all examples
@@ -167,7 +167,7 @@ function_list = [handle_error, handle_negative, handle_zero, handle_positive, ha
 function_list[sign((d := data_input), codeshift=2)](d)
 ```
 
-###Interaction with other keyword arguments
+### Interaction with other keyword arguments
 If there is the `if_exc` argument, it takes precedence over `codeshift`: instead of an exception, the `if_exc` value is returned unchanged. `codeshift` is applied in the remaining four cases (the results -1, 0, 1, and `NaN`).
 
 The interaction between `preprocess` and `codeshift` is similar. If `preprocess` returns `None` or a tuple with one element `(x,)`, then everything goes as usual: `codeshift` is not about the argument, but about the result. If `preprocess` returns a tuple with two elements `(x, y)`, it takes precedence over `codeshift`, and unchanged `y` is returned as the result.
@@ -176,23 +176,25 @@ The general principle is “an explicitly specified **special** case **overrides
 
 ## Why Gold Edition? (v1.2.0)
 
-###The Quinary Revolution:
--  **New `codeshift` Keyword Argument:** The headliner of v1.2.0. It enables effortless 5-way logic (`TypeError`, -1, 0, 1, `NaN`) without extra Python-level tricks.
+### The Quinary Revolution
+-  **New `codeshift` Argument:** The headliner of v1.2.0. It enables effortless 5-way logic (`TypeError`, -1, 0, 1, `NaN`) without extra Python-level overhead.
 
-###Evolution of Speed:
--  **New in v1.2.0: CPython FastCall.** Migration to METH_FASTCALL. This eliminated the overhead of temporary tuple and dictionary creation for arguments.
+### Evolution of Speed (**15.9%** faster than v1.1.5, **7.1%** faster than v1.0.2)
+-  **New in v1.2.0: CPython FastCall.** Migration to `METH_FASTCALL`. This eliminated the overhead of using temporary tuple and dictionary for argument parsing.
 -  **New in v1.2.0: Static Object Caching.** The comparison base (Python `int(0)`) and all keyword names are now static C-objects, pre-allocated at module load time.
 -  **Since v1.1.0: Branchless Logic Remastered.** The optimized cascade of ternary switches replaced the bulky 27-way switch.
--  **Since v1.0.0: Branchless Logic.** Our status index allows the CPU to execute core logic in a linear pipeline without conditional branching. We use C++ equivalent of `(x > 0) - (x < 0)` for the main result but edge cases and type errors complicate the problem.
+-  **Since v1.0.0: Branchless Logic.** Our state index allows the CPU to execute core logic in a linear pipeline without conditional branching even when handling edge cases and type errors.
 
 ## 📊 Performance & Quality Assurance
 
 ### Benchmark Results
-Versions 1.2.0 maintain near-zero overhead (+0.8% latency) despite adding logic for a new argument. See details in the "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
+**Gold Edition v1.2.0** delivers a **15.9%** performance boost over v1.1.5 and is **7.1%** faster than the original v1.0.2, despite the significantly expanded feature set. Detailed metrics are available "Benchmarking" section in [README for tests](https://github.com/acolesnicov/signum/tree/main/tests/README.md).
+
+*Note:* Benchmarking scripts require `psutil` (for priority management) and `sympy` (for `sympy` numeric types and `NaN` validation).
 
 ### Reliability
-- **Memory Safety:** Verified with long-run leak tests (0 bytes leaked over 7M iterations).
-- **Test Coverage:** 121 validation cases (up from 51 in v1.0.2 and 92 in v1.1.0+).
+-  **Memory Safety:** Verified with rigorous stress test (**0 bytes leaked over 7M iterations**).
+-  **Expanded Test Coverage:** 121 validation cases (vs 57 for  v1.0.2 and 94 for v1.1.0+).
 
 ## License
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/acolesnicov/signum/blob/main/LICENSE) file for details.

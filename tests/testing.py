@@ -27,7 +27,7 @@ __all__ = [
            'close_devnull',
            'OutputUTF8',
           ]
-          
+
 ### Tested entities
 
 ## Constants
@@ -43,9 +43,9 @@ EPS = 1e-9
 UTF8 = 'utf-8'
 
 MAX_PASSES = {
-    'simple_test_signum': 10000, 
-    '41_tests_signum':   100000, 
-    '57_tests_signum':   100000, 
+    'simple_test_signum': 10000,
+    '41_tests_signum':   100000,
+    '57_tests_signum':   100000,
     'leak_test':        1000000,
     'default':             1000,
 }
@@ -129,10 +129,10 @@ def set_high_priority():
         p = psutil.Process(pid := os.getpid())
         if (syst := platform.system()) == "Windows":
             p.nice(psutil.HIGH_PRIORITY_CLASS)
-        else: # Linux/MacOS
+        else: # Linux/macOS
             p.nice(-10) # Priority -10 needs rights!
         return f'{syst}: high priority for process {pid} was successfully set'
-    except Exception as e: # Not enough rights, or something else came bad: ignore
+    except Exception as e: # Not enough rights, or something else went wrong: ignore
         return f'{syst}: cannot set high priority for  process {pid}, got `{str(e)}`'
 
 # Detecting version
@@ -160,7 +160,7 @@ def trace(pcnt, cnt, scnt, what=None):
     beginning, descr = '   --- ', '' # trace without description is for simple_test_signum.py
     if what: beginning, descr = '', f': `{what}`'
     return f"{beginning}{delta:2} test{ending:1} for Sec. {scnt:2}{descr} passed, total {cnt:3} tests passed"
-    
+
 def success(counter, s_cnt=None, start_time=None, passes=None):
     version = detect_version()
     sections = ''
@@ -169,7 +169,7 @@ def success(counter, s_cnt=None, start_time=None, passes=None):
     if start_time: seconds = f' in {time.perf_counter() - start_time:>9.4f}s'
     reps = ''
     if passes: reps = f' (passes: {passes}; sign calls: {passes*counter})'
-    return f'Success of v{version:<6}: {counter} tests{sections} passed{seconds}{reps}.' 
+    return f'Success of v{version:<6}: {counter} tests{sections} passed{seconds}{reps}.'
 
 ## os.devnull
 
@@ -181,20 +181,20 @@ def close_devnull(f):
         try:
             f.flush()
         finally:
-            f.close()    
+            f.close()
 
 # Class to switch sys.stdout and sys.stderr
 class OutputUTF8:
     def __init__(self):
         self.original_stdout_params = {'encoding': sys.stdout.encoding, 'errors': sys.stdout.errors}
         self.original_stderr_params = {'encoding': sys.stderr.encoding, 'errors': sys.stderr.errors}
-        
+
     def set_utf8(self):
         # Switch sys.stdout and sys.stderr to 'utf-8' encoding
         sys.stdout.flush(); sys.stdout.reconfigure(encoding=UTF8)
         sys.stderr.flush(); sys.stderr.reconfigure(encoding=UTF8)
-        
-    def reset_from_utf8(self):    
+
+    def reset_from_utf8(self):
         # Restore stdout and stderr
         sys.stdout.flush(); sys.stdout.reconfigure(**self.original_stdout_params)
         sys.stderr.flush(); sys.stderr.reconfigure(**self.original_stderr_params)

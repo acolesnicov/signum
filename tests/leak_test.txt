@@ -1,15 +1,15 @@
-***** Test: E:\signum-project\tests\leak_test.py
+***** Test: e:\signum-project\tests\leak_test.py
 MAX_PASSES: 1000000
-*** Windows: high priority for process 7340 was successfully set ***
+*** Windows: high priority for process 12180 was successfully set ***
 
-Test Case            | Time (s)   | Memory (MB) 
+Test Case            | Time (s)   | Memory (MB)
 -----------------------------------------------------
-Base (int)           |    0.1006 |      21.35 (+0.00)
-Base (float)         |    0.0967 |      21.36 (+0.00)
-Preprocess (str)     |    0.4674 |      21.36 (+0.00)
-If_exc (error)       |    0.8475 |      21.36 (+0.00)
-Codeshift (error)    |    0.7445 |      21.36 (+0.00)
-Codeshift (int)      |    0.0812 |      21.36 (+0.00)
-Codeshift (nan)      |    0.0522 |      21.36 (+0.00)
+Base (int)           |    0.1022 |      21.52 (+0.00)
+Base (float)         |    0.1125 |      21.53 (+0.00)
+Preprocess (str)     |    0.5340 |      21.53 (+0.00)
+If_exc (error)       |    0.9826 |      21.53 (+0.00)
+Codeshift (error)    |    0.9578 |      21.53 (+0.00)
+Codeshift (int)      |    0.1194 |      21.53 (+0.00)
+Codeshift (nan)      |    0.0792 |      21.53 (+0.00)
 
-Success of v1.2.0: 7 tests passed (passes: 1000000; sign calls: 7000000).
+Success of v1.2.0 : 7 tests passed (passes: 1000000; sign calls: 7000000).

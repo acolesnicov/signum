@@ -280,7 +280,7 @@ if __name__ == '__main__':
     # Switch sys.stdout and sys.stderr to 'utf-8' encoding
     outflows = OutputUTF8()
     outflows.set_utf8()
-    
+
     print(f'***** Test: {__file__}\n', flush=True)
     unittest.main()
 

@@ -44,7 +44,7 @@ def benchmark_and_leak_check():
         print(f"{name:<20} | {duration:>9.4f} | {end_mem:>10.2f} ({mem_diff:+.2f})")
 
 if __name__ == "__main__":
-    
+
     print(f'***** Test: {__file__}')
     print(f'MAX_PASSES: {MAX_PASSES}')
     print(f'*** {set_high_priority()} ***\n')

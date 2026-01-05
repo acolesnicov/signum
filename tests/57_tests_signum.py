@@ -106,7 +106,7 @@ for _ in range(MAX_PASSES + 1):
             (sign(x))
         except TypeError as e:
             (e)
-    
+
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()
 
