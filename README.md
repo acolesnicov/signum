@@ -1,7 +1,7 @@
 # csignum-fast
 ![Python Version](https://img.shields.io/badge/python-3.8+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
-![Status](https://img.shields.io/badge/release-Gold%20Edition-gold.svg)
+![Status](https://img.shields.io/badge/release-Gold%20Edition%2b-gold.svg)
 ![Performance](https://img.shields.io/badge/performance-+16%25%20faster-orange.svg)
 ![Tests](https://img.shields.io/badge/tests-263%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
@@ -10,11 +10,11 @@
 
 *Released on February 23, 2026* ⊙ *Gold Edition+*
 
+Version **1.2.4**: Fixed documentation typos..
+
 Version **1.2.3**: Preview of two new options from the upcoming version v1.3.1.
 - `codeshift` as the second positional argument;
 - the simplified `fastsign` that is up to **1.5 times faster** than `sign` but has no additional options.
-
-Version **1.2.2**: Maximum speed (**+7.1%** vs v.1.0.2 and **+15.9%** vs 1.1.5), and the third keyword argument.
 
 ## Important Note on API Changes
 
@@ -24,7 +24,7 @@ Starting from v1.2.3, the `codeshift` parameter is preferred as a **second posit
 
 Since v1.2.3, the `fastsign(x)` function is provided for scenarios where performance is critical.
 
-* **Performance:** fastsign(x) provides up to 50% performance boost by simplifying type checks and focusing on core numeric types.
+* **Performance:** `fastsign(x)` provides up to 50% performance boost by simplifying type checks and focusing on core numeric types.
 
 * **Implementation:** It is a straightforward C++ port of the [`fastsign.py`](https://github.com/acolesnicov/signum/tree/main/tests/fastsign.py) prototype. While the Python version uses 4 lines of logic and 17 lines of exception handling, the C++ version is optimized for even tighter execution loops.
 
@@ -36,7 +36,7 @@ Since v1.2.3, the `fastsign(x)` function is provided for scenarios where perform
 
     * `fastsign(x)` is an **optimized calculator.** It is ideal for large arrays of standard numbers.
 
-    * **Validation:** The reliability of `fastsign` is verified by 53 equivalence tests, ensuring it matches sign(x) results in 52 cases. The equivalence is checked for all standard Python numeric types, including `int`, `float`, `Fraction`, `Decimal`, and `sympy` numbers. The single exclusion is a specific edge case: a custom type that lacks comparisons but supports conversion to `float`.
+    * **Validation:** The reliability of `fastsign` is verified by 53 equivalence tests, ensuring it matches `sign(x)` results in 52 cases. The equivalence is checked for all standard Python numeric types, including `int`, `float`, `Fraction`, `Decimal`, and `sympy` numbers. The single exclusion is a specific edge case: a custom type that lacks comparisons but supports conversion to `float`.
 
 ## Key Features
 
@@ -88,7 +88,7 @@ from decimal import Decimal
 print(sign(Decimal("0.0"))) #  0
 ```
 
-The following advanced features are not available in `fastsign`.
+The following advanced features are **not available** in `fastsign`.
 
 ## Advanced Usage (New features since v1.1.0)
 
@@ -211,7 +211,7 @@ function_list = [handle_error, handle_negative, handle_zero, handle_positive, ha
 function_list[sign((d := data_input), 2)](d)
 ```
 
-### Interaction with other keyword arguments
+### Interaction with other arguments
 If there is the `if_exc` argument, it takes precedence over `codeshift`: instead of an exception, the `if_exc` value is returned unchanged. `codeshift` is applied in the remaining four cases (the results -1, 0, 1, and `NaN`).
 
 The interaction between `preprocess` and `codeshift` is similar. If `preprocess` returns `None` or a tuple with one element `(x,)`, then everything goes as usual: `codeshift` is not about the argument, but about the result. If `preprocess` returns a tuple with two elements `(x, y)`, it takes precedence over `codeshift`, and unchanged `y` is returned as the result.

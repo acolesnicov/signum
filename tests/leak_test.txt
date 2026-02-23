@@ -1,17 +1,18 @@
 ***** Test: E:\signum-v123\tests\leak_test.py
 MAX_PASSES: 1000000
-*** Windows: high priority for process 6304 was successfully set ***
+*** Windows: high priority for process 19908 was successfully set ***
 
 Test Case            | Time (s)   | Memory (MB) 
 -----------------------------------------------------
-Base (int)           |    0.0686 |      21.59 (+0.00)
-Fast (int)           |    0.0454 |      21.60 (+0.00)
-Base (float)         |    0.0747 |      21.60 (+0.00)
-Fast (float)         |    0.0519 |      21.60 (+0.00)
-Preprocess (str)     |    0.3880 |      21.60 (+0.00)
-If_exc (error)       |    0.7206 |      21.60 (+0.00)
-Codeshift (error)    |    0.7458 |      21.60 (+0.00)
-Codeshift (int)      |    0.0772 |      21.60 (+0.00)
-Codeshift (nan)      |    0.0513 |      21.60 (+0.00)
+Base (int)           |    0.0640 |      21.62 (+0.00)
+Fast (int)           |    0.0431 |      21.63 (+0.00)
+Base (float)         |    0.0708 |      21.63 (+0.00)
+Fast (float)         |    0.0492 |      21.63 (+0.00)
+Preprocess (str)     |    0.3760 |      21.63 (+0.00)
+If_exc (error)       |    0.7069 |      21.63 (+0.00)
+Codeshift (error)    |    0.7124 |      21.63 (+0.00)
+Codeshift (int)      |    0.0780 |      21.63 (+0.00)
+Codeshift (nan)      |    0.0502 |      21.63 (+0.00)
 
-Success of v1.2.3 : 9 tests passed (passes: 1000000; sign calls: 9000000).
+Success of v1.2.4 : 9 tests passed (passes: 1000000; sign calls: 9000000).
+DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and will be removed in August 2026; use the second positional argument instead

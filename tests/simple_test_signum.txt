@@ -1,6 +1,6 @@
 ***** Test: E:\signum-v123\tests\simple_test_signum.py
 MAX_PASSES: 10000
-*** Windows: high priority for process 18636 was successfully set ***
+*** Windows: high priority for process 2184 was successfully set ***
 
  1 --- int
 sign(-5): -1
@@ -101,7 +101,7 @@ sign(_MyNumber(5.1)): 1
 
 16 --- ExplodingNumber, NotImplementedNumber
 - TypeError: signum.sign: invalid argument `ExplodingNumber(-3.14)` (type 'ExplodingNumber'). Cause: <class 'RuntimeError'> returned a result with an exception set
-- TypeError: signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Cause: <function NotImplementedNumber.__lt__ at 0x0000019DF551A020> returned a result with an exception set
+- TypeError: signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Cause: <function NotImplementedNumber.__lt__ at 0x00000191CB42A020> returned a result with an exception set
    ---  2 tests for Sec. 16 passed, total  52 tests passed
 
 17 --- inappropriate argument types (None, str, complex, list, set)
@@ -325,5 +325,5 @@ fastsign(_NotImplementedNumber(-3.14): -1
 - TypeError: must be real number, not set
    --- 58 tests for Sec. 28 passed, total 210 tests passed
 
-Success of v1.2.3 : 210 tests from 28 sections passed in    8.4712s (passes: 10000; sign calls: 2100000).
+Success of v1.2.4 : 210 tests from 28 sections passed in    8.4221s (passes: 10000; sign calls: 2100000).
 DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and will be removed in August 2026; use the second positional argument instead

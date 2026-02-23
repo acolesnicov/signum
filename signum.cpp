@@ -1,7 +1,7 @@
 /*
  * signum.cpp
  * High-performance, versatile implementation of the universal 'sign' function for Python
- * Version: 1.2.3 ⊙ Gold Edition + preview of two options from the upcoming v1.3.1
+ * Version: 1.2.4 ⊙ Gold Edition + preview of two options from the upcoming v1.3.1
  * Released: February 23, 2026
  * Copyright (c) 2025-2026 Alexandru Colesnicov
  * License: MIT
@@ -486,7 +486,7 @@ PyMODINIT_FUNC PyInit_signum(void) {
     PyModule_AddObject(m, "__all__", all_list);
 
     /* Add attribute 'signum.__version__' */
-    PyModule_AddStringConstant(m, "__version__", "1.2.3");
+    PyModule_AddStringConstant(m, "__version__", "1.2.4");
     return m;
 }
 #ifdef __cplusplus
