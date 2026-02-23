@@ -8,9 +8,9 @@
 
 **High-performance, versatile implementation of the universal 'sign' function for Python**
 
-*Released on February 23, 2026* ⊙ *Gold Edition+*
+*Released on February 24, 2026* ⊙ *Gold Edition+*
 
-Version **1.2.4**: Fixed documentation typos..
+Version **1.2.5**: Fixed dead link in docs for v1.2.3.
 
 Version **1.2.3**: Preview of two new options from the upcoming version v1.3.1.
 - `codeshift` as the second positional argument;
@@ -50,7 +50,7 @@ Since v1.2.3, the `fastsign(x)` function is provided for scenarios where perform
     * `fractions.Fraction` and `decimal.Decimal`.
     * Any existing and future objects that support rich comparisons with numbers.
 4.  **Informative Error Handling for Easy Debugging**: Provides clear, descriptive `TypeError` messages when passed non-numeric, non-scalar, or incomparable arguments.
-5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum for a C++ extension for Python: since v1.0.0 all possibilities to increase performance have been systematically searched and applied.
+5.  **⚡ High Performance**: Branch-optimized `C++20` core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum for a `C++` extension for Python: since v1.0.0 all possibilities to increase performance have been systematically searched and applied.
 6.  **✅ Thoroughly Tested**: Tested on 263 cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against older versions.
 7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an **Early Exit** (recursion permitted).
 8.  **🛡️ Exception safety**: The `if_exc` keyword argument allows to define a fallback value (like `None`, `math.nan`, or `-2`) instead of crashing on invalid types.

@@ -15,7 +15,7 @@ To provide **universality** and to guarantee absence of accidental results, and 
 Memory leak is thoroughly prevented (tested at 9 mln. `sign` calls).
 
 ### Performance
-**Performance vs. safety** is **the** dilemma. From the very beginning my core logic was strictly **branchless**. It avoids `if-else` blocks, divisions, and multiplications, while mathematically the result is equivalent to the use of these beautiful but slow things (see [CORE_LOGIC](https://github.com/acolesnicov/signum/tree/main/tests/CORE_LOGIC.py) and comments in [`signum.cpp`](https://github.com/acolesnicov/signum/tree/main/signum.cpp) for detais). With maximal optimization in the C++ layer supported by the detailed compiler hints, I could take into account each processor tact and each cache bit. This ensures the CPU pipeline always remains full.
+**Performance vs. safety** is **the** dilemma. From the very beginning my core logic was strictly **branchless**. It avoids `if-else` blocks, divisions, and multiplications, while mathematically the result is equivalent to the use of these beautiful but slow things (see [CORE_LOGIC](https://github.com/acolesnicov/signum/blob/main/tests/CORE_LOGIC.md) and comments in [`signum.cpp`](https://github.com/acolesnicov/signum/tree/main/signum.cpp) for detais). With maximal optimization in the C++ layer supported by the detailed compiler hints, I could take into account each processor tact and each cache bit. This ensures the CPU pipeline always remains full.
 
 Python can’t easily detect all anomalies (and the theory can’t help), but a dedicated C++ extension can—and it does so without losing a single microsecond.
 
