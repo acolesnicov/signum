@@ -4,6 +4,11 @@ test_*/
 venv/
 env/
 __pycache__/
+_builder/
+_old_env/
+_tester/
+_build.bat
+_cpp_check.bat
 .pytest_cache/
 .vscode/
 .idea/
@@ -13,3 +18,4 @@ __pycache__/
 *.obj
 *.so
 .pypirc
+tester.*

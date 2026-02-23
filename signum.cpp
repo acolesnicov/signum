@@ -1,63 +1,107 @@
 /*
  * signum.cpp
  * High-performance, versatile implementation of the universal 'sign' function for Python
- * Version: 1.2.2 ⊙ Gold Edition
- * Released: January 5, 2026
+ * Version: 1.2.3 ⊙ Gold Edition + preview of two options from the upcoming v1.3.1
+ * Released: February 23, 2026
  * Copyright (c) 2025-2026 Alexandru Colesnicov
  * License: MIT
  */
 
+#include <string>
+#include <cmath>
+#ifndef PY_SSIZE_T_CLEAN
+    #define PY_SSIZE_T_CLEAN
+#endif
 #include <Python.h>
 
-/* Static objects for keywords (argument names) and for Python 'int(0)' */
+/* Static objects for keywords (argument names) */
 static PyObject *kw_if_exc     = NULL;
 static PyObject *kw_preprocess = NULL;
 static PyObject *kw_codeshift  = NULL;
-static PyObject *Py_zero       = NULL;
 
-/* Clearing at module  */
+/* 'int(-1)', 'int(0)', 'int(1)', "float('nan')" */
+static PyObject *Py_m_one       = NULL;
+static PyObject *Py_zero        = NULL;
+static PyObject *Py_one         = NULL;
+static PyObject *Py_float_nan   = NULL;
+
+/* Deprecation warning control */
+static bool warn_flag           = false;
+
+/* Finalisation at module unload */
 static void signum_free(void *m) {
+    /* Warning: deprecated 'codeshift=' keyword argument was used */
+    if (warn_flag) {
+        fputs("DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and "
+              "will be removed in August 2026; use the second positional argument instead\n", stderr);
+        fflush(stderr);
+    }
     Py_XDECREF(kw_if_exc);
     Py_XDECREF(kw_preprocess);
     Py_XDECREF(kw_codeshift);
+    Py_XDECREF(Py_m_one);
     Py_XDECREF(Py_zero);
+    Py_XDECREF(Py_one);
+    Py_XDECREF(Py_float_nan);
 }
+
+/* Light-type thread-safe cache for 'fastsign' */
+static thread_local PyTypeObject *fs_prev_type = NULL;
+static thread_local richcmpfunc fs_f_cmp = NULL;
 
 static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames)
 {
     /* Check positional arguments */
-    if (nargs != 1) {
-        PyErr_Format(PyExc_TypeError, "signum.sign() takes 1 positional argument but %zd were given", nargs);
-        return NULL;
+
+    bool no_codeshift = true;
+    long c_codeshift  = 0;
+
+    switch (nargs) {
+        case 2: /* Processing 'codeshift' */
+            {
+                PyObject *a2_obj = args[1];
+                if (a2_obj == Py_None) break;
+                if (PyLong_Check(a2_obj)) { /* 'int' is codeshift */
+                    c_codeshift = PyLong_AsLong(a2_obj);
+                    if (c_codeshift == -1 && PyErr_Occurred()) { c_codeshift = 0; return NULL; }
+                    no_codeshift = false;
+                }
+                break;
+            }
+        case 1:
+            break;
+        case 0:
+            [[fallthrough]];
+        default:
+            PyErr_Format(PyExc_TypeError, "signum.sign() takes 1 or 2 positional arguments, got %zd", nargs);
+            return NULL;
     }
 
     PyObject *x          = args[0];
     PyObject *if_exc     = Py_None;
     PyObject *preprocess = Py_None;
-    int no_codeshift = 1;
-    long c_codeshift = 0;
-
-    /* Optimization: Tell the compiler that 'no_codeshift' is strictly 0 or 1 */
-    #if __has_cpp_attribute(assume)
-        [[assume((no_codeshift == 0) || (no_codeshift == 1))]];
-    #elif defined(_MSC_VER)
-        __assume((no_codeshift == 0) || (no_codeshift == 1));
-    #elif defined(__GNUC__) || defined(__clang__)
-        if (!((no_codeshift == 0) || (no_codeshift == 1))) __builtin_unreachable();
-    #endif
 
     /* Parse keyword-only arguments using interned strings */
     if (kwnames != NULL) {
         Py_ssize_t nkwargs = PyTuple_GET_SIZE(kwnames);
         for (Py_ssize_t i = 0; i < nkwargs; i++) {
             PyObject *key = PyTuple_GET_ITEM(kwnames, i);
-            PyObject *val = args[1 + i];
+            PyObject *val = args[nargs + i];
 
             if (key == kw_codeshift) {
-                /* Convert to 'long' without checking */
-                c_codeshift = PyLong_AsLong(val);
-                if (c_codeshift == -1 && PyErr_Occurred()) return NULL;
-                no_codeshift = 0;
+                warn_flag = true;
+                if (nargs != 2) {
+                    /* Convert to 'long' without checking */
+                    if (val != Py_None) {
+                        c_codeshift = PyLong_AsLong(val);
+                        if (c_codeshift == -1 && PyErr_Occurred()) { c_codeshift = 0; return NULL; }
+                        no_codeshift = false;
+                    }
+                } else {
+                    PyErr_Format(PyExc_TypeError,
+                                 "signum.sign(): the 2nd positional argument used; 'codeshift=' is not permitted");
+                    return NULL;
+                }
             } else if (key == kw_if_exc) {
                 if_exc = val;
             } else if (key == kw_preprocess) {
@@ -113,9 +157,10 @@ static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t n
     double d = PyFloat_AsDouble(x);
     if (Py_IS_NAN(d)) {
         Py_XDECREF(to_free);
-        switch (no_codeshift) {
-            case 0: return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
-            case 1: return PyFloat_FromDouble(Py_NAN);
+        if (no_codeshift) {
+            return PyFloat_FromDouble(Py_NAN);
+        } else {
+            return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
         }
     }
     /* If it is something special, we will nevertheless try comparisons */
@@ -212,9 +257,10 @@ static PyObject *signum_sign(PyObject *self, PyObject *const *args, Py_ssize_t n
                 }
                 case  0: { /* NaN: not equal to itself */
                     Py_XDECREF(to_free);
-                    switch (no_codeshift) {
-                        case 0: return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
-                        case 1: return PyFloat_FromDouble(Py_NAN);
+                    if (no_codeshift) {
+                        return PyFloat_FromDouble(Py_NAN);
+                    } else {
+                        return PyLong_FromLong(c_codeshift + 2); /* +2 is numeric code for NaN */
                     }
                 }
                 case  1: goto error; /* Not a NaN: equals to itself; not comparable to 0 */
@@ -237,12 +283,9 @@ error:
         return item;
     }
 
-    switch (no_codeshift) {
-        case 0: {
-            PyErr_Clear();
-            return PyLong_FromLong(c_codeshift - 2); /* -2 is numeric stat_idx for detectable error */
-        }
-        case 1: break;
+    if (!no_codeshift) {
+        if (PyErr_Occurred()) PyErr_Clear();
+        return PyLong_FromLong(c_codeshift - 2); /* -2 is numeric stat_idx for detectable error */
     }
 
     if (PyErr_Occurred()) {
@@ -262,7 +305,7 @@ error:
         /* Format the new message */
         PyErr_Format(PyExc_TypeError,
             "signum.sign: invalid argument `%.160s` (type '%.80s'). "
-            "Inner error: %.320s",
+            "Cause: %.320s",
             repr ? PyUnicode_AsUTF8(repr) : "???",
             type_name,
             old_msg_str);
@@ -298,11 +341,95 @@ error:
     return NULL;
 }
 
+/* 'fastsign': fast straightforward signum */
+static PyObject *signum_fastsign(PyObject *self, PyObject *x)
+{
+    if (PyErr_Occurred()) PyErr_Clear();
+
+    PyTypeObject *T = Py_TYPE(x);
+
+    if (T != fs_prev_type) {
+        fs_prev_type = T;
+        fs_f_cmp = T->tp_richcompare;
+    }
+
+    if (fs_f_cmp) {
+        PyObject *res = NULL;
+
+        // x > 0
+        res = fs_f_cmp(x, Py_zero, Py_GT);
+        if (res == Py_True) {
+            Py_DECREF(res); Py_INCREF(Py_one); return Py_one;
+        }
+        long flag = (res == NULL) || (res == Py_NotImplemented);
+        Py_XDECREF(res);
+        if (flag) goto fs_error;
+
+        // x < 0
+        res = fs_f_cmp(x, Py_zero, Py_LT);
+        if (res == Py_True) {
+            Py_DECREF(res); Py_INCREF(Py_m_one); return Py_m_one;
+        }
+        flag = (res == NULL) || (res == Py_NotImplemented);
+        Py_XDECREF(res);
+        if (flag) goto fs_error;
+
+        // x == 0
+        res = fs_f_cmp(x, Py_zero, Py_EQ);
+        if (res == Py_True) {
+            Py_DECREF(res); Py_INCREF(Py_zero); return Py_zero;
+        }
+        Py_XDECREF(res);
+    }
+
+fs_error:
+    {
+        std::string inner_error = "";
+
+        if (PyErr_Occurred()) {
+            PyObject *t = NULL, *v = NULL, *tb = NULL;
+            PyErr_Fetch(&t, &v, &tb);
+
+            if (v) {
+                PyObject *old_msg = PyObject_Str(v);
+                if (old_msg) {
+                    const char *temp = PyUnicode_AsUTF8(old_msg);
+                    inner_error = temp;
+                    Py_DECREF(old_msg);
+                }
+            }
+
+            Py_XDECREF(t); Py_XDECREF(v); Py_XDECREF(tb);
+        }
+
+        if (inner_error.empty()) {
+            inner_error = "comparison with 'int' not implemented for type '";
+            inner_error += T->tp_name;
+            inner_error += "'";
+        }
+
+        if (!PyUnicode_Check(x)) {
+            double d = PyFloat_AsDouble(x);
+            if (d == -1.0 && PyErr_Occurred()) return NULL;
+
+            if (std::isnan(d)) { Py_INCREF(Py_float_nan); return Py_float_nan; }
+            if (d == 0.0)      { Py_INCREF(Py_zero);      return Py_zero;      }
+            if (d >  0.0)      { Py_INCREF(Py_one);       return Py_one;       }
+            if (d <  0.0)      { Py_INCREF(Py_m_one);     return Py_m_one;     }
+        }
+
+        PyErr_Format(PyExc_TypeError, "signum.fastsign(): cannot compare or check for NaN. Cause: %.320s",
+                                      inner_error.c_str());
+    }
+    return NULL;
+}
+
 /* --- FORMALITIES --- */
 
 /* List of implemented methods */
 static PyMethodDef SignumMethods[] = {
     {"sign", (PyCFunction)signum_sign, METH_FASTCALL | METH_KEYWORDS, "Return the sign of x: -1, 0, 1, or NaN."},
+    {"fastsign", (PyCFunction)signum_fastsign, METH_O, "Return the sign of x: -1, 0, 1, or NaN. Simlified variant."},
     {NULL, NULL, 0, NULL} /* Stop-string */
 };
 
@@ -310,7 +437,7 @@ static PyMethodDef SignumMethods[] = {
 static struct PyModuleDef signummodule = {
     PyModuleDef_HEAD_INIT,
     "signum",
-    "High-performance sign function for Python.",
+    "Universal, Robust, High-Performance, Versatile Implementation of the 'sign' Function for Python.",
     -1,
     SignumMethods,
     NULL, NULL, NULL,
@@ -318,6 +445,9 @@ static struct PyModuleDef signummodule = {
 };
 
 /* Module initialization */
+#ifdef __cplusplus
+extern "C" {
+#endif
 PyMODINIT_FUNC PyInit_signum(void) {
     PyObject *m = PyModule_Create(&signummodule);
     if (m == NULL) return NULL;
@@ -327,14 +457,38 @@ PyMODINIT_FUNC PyInit_signum(void) {
     kw_preprocess = PyUnicode_InternFromString("preprocess");
     kw_codeshift  = PyUnicode_InternFromString("codeshift");
 
-    /* Create static Pyhtonic int(0) */
-    Py_zero = PyLong_FromLong(0);
+    /* Create static Pythonic int(-1), int(0), int(1), and float('nan') */
+    Py_m_one      = PyLong_FromLong(-1);
+    Py_zero       = PyLong_FromLong( 0);
+    Py_one        = PyLong_FromLong( 1);
+    Py_float_nan  = PyFloat_FromDouble(Py_NAN);
 
     if (!kw_if_exc || !kw_preprocess || !kw_codeshift || !Py_zero) {
         return NULL; /* No memory */
     }
 
-    /* Adding attribute 'signum.__version__' */
-    PyModule_AddStringConstant(m, "__version__", "1.2.2");
+    /* Provide '__all__' */
+    /* List for 'fastsign' and 'sign' */
+    PyObject *all_list = PyList_New(0);
+
+    /* Lambda-helper */
+    auto add_to_all = [&](const char* name) {
+        PyObject *py_name = PyUnicode_FromString(name);
+        PyList_Append(all_list, py_name);
+        Py_DECREF(py_name);
+    };
+
+    /* Add functions to the list */
+    add_to_all("fastsign");
+    add_to_all("sign");
+
+    /* Add attribute 'signum.__all__' */
+    PyModule_AddObject(m, "__all__", all_list);
+
+    /* Add attribute 'signum.__version__' */
+    PyModule_AddStringConstant(m, "__version__", "1.2.3");
     return m;
 }
+#ifdef __cplusplus
+}
+#endif

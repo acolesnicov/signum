@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2026-02-2 (Gold Edition+)
+-  Added preview of two options from the upcoming v.1.3.1:
+    - `codeshift` should be supplied as the second positional argument; use of `codeshift=` keyword is permitted but produses DeprecationWarning;
+    - a simplified `fastsign` function is added that is up to **2.3 times faster** than `sign` but has no additional options. 
+
 ## [1.2.2] - 2026-01-05 (Gold Edition)
 -  Fixed documentation typos.
 

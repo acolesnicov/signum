@@ -97,6 +97,13 @@ for _ in range(MAX_PASSES + 1):
     print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
     s_cnt += 1; prev_counter = counter
+    print(f'\n{s_cnt:2} --- Tests with a very small argument kindly provided by Tim Peters', file=out_test)
+    print(f"{sign(Fraction(1, 1 << 2000))  =  }".replace('  =  ', ': ', 1), file=out_test); counter += 1
+    print(f"{sign(float(Fraction(1, 1 << 2000)))  =  }".replace('  =  ', ': ', 1), file=out_test); counter += 1
+
+    print(_trace(prev_counter, counter, s_cnt), file=out_test)
+
+    s_cnt += 1; prev_counter = counter
     print(f'\n{s_cnt:2} --- Decimal', file=out_test)
     print("sign(Decimal(-5.5)):", sign(Decimal(-5.5)), file=out_test); counter += 1
     print("sign(Decimal(-1.5)):", sign(Decimal(-1.5)), file=out_test); counter += 1
@@ -140,7 +147,7 @@ for _ in range(MAX_PASSES + 1):
     try:
         print("sign(_MyNumber(nan)):", sign(_MyNumber(nan)), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
@@ -152,7 +159,7 @@ for _ in range(MAX_PASSES + 1):
     try:
         print("sign():", sign(), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
@@ -161,42 +168,43 @@ for _ in range(MAX_PASSES + 1):
             print("sign(preprocess=lambda a: (float(a),), if_exc=None):",
                   sign(preprocess=lambda a: (float(a),), if_exc=None), file=out_test)
         except TypeError as e:
-            print(f"- {e}", file=out_test)
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+
+    if _SST < 3:
+        try:
+            print("sign(-1, 0):", sign(-1, 0), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
         finally:
             counter += 1
 
     try:
-        print("sign(-1, 0):", sign(-1, 0), file=out_test)
-    except TypeError as e:
-        print(f"- {e}", file=out_test)
-    finally:
-        counter += 1
-
-    try:
         print("sign(-1, 0, 1):", sign(-1, 0, 1), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
     try:
         print("sign(-1, 0, 1, 4):", sign(-1, 0, 1, 4), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
     try:
         print("sign(-1, 0, 1, 4, 5):", sign(-1, 0, 1, 4, 5), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
     try:
         print("sign(5.0, code_shift=2):", sign(5.0, code_shift=2), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
@@ -207,14 +215,14 @@ for _ in range(MAX_PASSES + 1):
     try:
         print("sign(_ExplodingNumber(-3.14):", sign(_ExplodingNumber(-3.14)), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
     try:
         print("sign(_NotImplementedNumber(-3.14):", sign(_NotImplementedNumber(-3.14)), file=out_test)
     except TypeError as e:
-        print(f"- {e}", file=out_test)
+        print(f"- {type(e).__name__}: {e}", file=out_test)
     finally:
         counter += 1
 
@@ -227,7 +235,7 @@ for _ in range(MAX_PASSES + 1):
         try:
             print("sign({repr(x)}):", sign(x), file=out_test)
         except TypeError as e:
-            print(f"- {e}", file=out_test)
+            print(f"- {type(e).__name__}: {e}", file=out_test)
         finally:
             counter += 1
 
@@ -244,7 +252,7 @@ for _ in range(MAX_PASSES + 1):
                 print(f"sign({repr(x)}, "
                       f"preprocess=lambda a: (float(a),)):", sign(x, preprocess=lambda a: (float(a),)), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
 
@@ -269,7 +277,7 @@ for _ in range(MAX_PASSES + 1):
                 print(f"sign({repr(x)}, "
                       f"preprocess=n_extract):", sign(x, preprocess=_n_extract), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
 
@@ -284,7 +292,7 @@ for _ in range(MAX_PASSES + 1):
                 print(f"sign({repr(x)}, "
                       f"preprocess=c_prep):", sign(x, preprocess=_c_prep), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
 
@@ -299,7 +307,7 @@ for _ in range(MAX_PASSES + 1):
                       f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None):",
                       sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
 
@@ -330,7 +338,7 @@ for _ in range(MAX_PASSES + 1):
                       f"if_exc=({repl[flag]},)):",
                       sign(x, if_exc=(repl[flag],)), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
             flag = (flag + 1) % nrepl
@@ -347,7 +355,7 @@ for _ in range(MAX_PASSES + 1):
                       f"if_exc=(None,)):",
                       sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,)), file=out_test)
             except TypeError as e:
-                print(f"- {e}", file=out_test)
+                print(f"- {type(e).__name__}: {e}", file=out_test)
             finally:
                 counter += 1
 
@@ -364,8 +372,8 @@ for _ in range(MAX_PASSES + 1):
                   sign(x, codeshift=2), file=out_test); counter += 1
         print('   ---', file=out_test)
         for x in tests:
-            print(f"sign({repr(x)}, if_exc=(13,), codeshift=2):",
-                  sign(x, if_exc=(13,), codeshift=2), file=out_test); counter += 1
+            print(f"sign({repr(x)}, if_exc=(-7,), codeshift=2):",
+                  sign(x, if_exc=(-7,), codeshift=2), file=out_test); counter += 1
         print('   ---', file=out_test)
         tests = ['error', -1, 0, -.187e-17, 5.0]
         for x in tests:
@@ -384,11 +392,185 @@ for _ in range(MAX_PASSES + 1):
         for x in tests:
             print(f"sign({repr(x)}, "
                   f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, "
-                  f"if_exc=(13,), codeshift=1):",
-                  sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1), file=out_test); counter += 1
+                  f"if_exc=(-7,), codeshift=1):",
+                  sign(x, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1), file=out_test); counter += 1
 
         print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
+    if _SST > 2: # This is for v.1.2.3+
+        # v1.2.3: positional codeshift and fastsign
+        from signum import fastsign
+
+        s_cnt += 1; prev_counter = counter
+        print(f"\n{s_cnt:2} --- v1.2.3: positional codeshift", file=out_test)
+        try:
+            print("sign(-77, None, codeshift=2):", sign(-77, None, codeshift=2), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        tests = ['error', -5, 0, 5, nan]
+        for x in tests:
+            print(f"sign({repr(x)}, 2):",
+                  sign(x, 2), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        for x in tests:
+            print(f"sign({repr(x)}, 2, if_exc=(-7,)):",
+                  sign(x, 2, if_exc=(-7,)), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        tests = ['error', -1, 0, -.187e-17, 5.0]
+        for x in tests:
+            print(f"sign({repr(x)}, 2, "
+                  f"preprocess=lambda a: (0 if abs(a) < _EPS else a,)):",
+                  sign(x, 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)),
+                  file=out_test); counter += 1
+        print('   ---', file=out_test)
+        tests = ['error', -5.0, 0.0, 0, 5, nan]
+        for x in tests:
+            print(f"sign({repr(x)}, 1, "
+                  f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None):",
+                  sign(x, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None), file=out_test); counter += 1
+        print(f"sign({repr(x)}, 1, "
+              f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None):",
+              sign(x, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        for x in tests:
+            print(f"sign({repr(x)}, 1, "
+                  f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, "
+                  f"if_exc=(-7,)):",
+                  sign(x, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)), file=out_test); counter += 1
+        print(f"sign({repr(x)}, 1, "
+              f"preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None, "
+              f"if_exc=(-7,)):",
+              sign(x, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None, if_exc=(-7,)), file=out_test); counter += 1
+
+        print(_trace(prev_counter, counter, s_cnt), file=out_test)
+
+        s_cnt += 1; prev_counter = counter
+        print(f'\n{s_cnt:2} --- v1.2.3: fastsign', file=out_test)
+        print("fastsign(-5):", fastsign(-5), file=out_test); counter += 1
+        print("fastsign(-1):", fastsign(-1), file=out_test); counter += 1
+        print("fastsign(0):", fastsign(0), file=out_test); counter += 1
+        print("fastsign(1):", fastsign(1), file=out_test); counter += 1
+        print("fastsign(5):", fastsign(5), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(True):", fastsign(True), file=out_test); counter += 1
+        print("fastsign(False):", fastsign(False), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print('fastsign(10**1000):', fastsign(10**1000), file=out_test); counter += 1
+        print('fastsign(-10**1000):', fastsign(-10**1000), file=out_test); counter += 1
+        print('fastsign(10**1000-10**1000):', fastsign(10**1000-10**1000), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(-5.0):", fastsign(-5.0), file=out_test); counter += 1
+        print("fastsign(-1.0):", fastsign(-1.0), file=out_test); counter += 1
+        print("fastsign(0.0):", fastsign(0.0), file=out_test); counter += 1
+        print("fastsign(1.0):", fastsign(1.0), file=out_test); counter += 1
+        print("fastsign(5.0):", fastsign(5.0), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(float('-0.0')):", fastsign(float('-0.0')), file=out_test); counter += 1
+        print("fastsign(float('+0.0')):", fastsign(float('+0.0')), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(-inf):", fastsign(-inf), file=out_test); counter += 1
+        print("fastsign(inf):", fastsign(inf), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(float('-nan')):", fastsign(float('-nan')), file=out_test); counter += 1
+        print("fastsign(nan):", fastsign(nan), file=out_test); counter += 1
+        print("fastsign(0.0*nan):", fastsign(0.0*nan), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(Fraction(-5, 2)):", fastsign(Fraction(-5, 2)), file=out_test); counter += 1
+        print("fastsign(Fraction(-1, 2)):", fastsign(Fraction(-1, 2)), file=out_test); counter += 1
+        print("fastsign(Fraction(0, 2)):", fastsign(Fraction(0, 2)), file=out_test); counter += 1
+        print("fastsign(Fraction(1, 2)):", fastsign(Fraction(1, 2)), file=out_test); counter += 1
+        print("fastsign(Fraction(5, 2)):", fastsign(Fraction(5, 2)), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print(f"{fastsign(Fraction(1, 1 << 2000))  =  }".replace('  =  ', ': ', 1), file=out_test); counter += 1
+        print(f"{fastsign(float(Fraction(1, 1 << 2000)))  =  }".replace('  =  ', ': ', 1), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(Decimal(-5.5)):", fastsign(Decimal(-5.5)), file=out_test); counter += 1
+        print("fastsign(Decimal(-1.5)):", fastsign(Decimal(-1.5)), file=out_test); counter += 1
+        print("fastsign(Decimal(0.0)):", fastsign(Decimal(0.0)), file=out_test); counter += 1
+        print("fastsign(Decimal(1.5)):", fastsign(Decimal(1.5)), file=out_test); counter += 1
+        print("fastsign(Decimal(5.5)):", fastsign(Decimal(5.5)), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(Decimal('NaN')):", fastsign(Decimal('NaN')), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        x_sym = sympy.Symbol('x')
+        expr = x_sym
+        val = expr.subs(x_sym, -3.14)
+        print(f"val: {repr(val)}; type(val): {type(val)}", file=out_test)
+        print(f"type(val > 0): {type(val > 0)}", file=out_test)
+        print("fastsign(val):", fastsign(val), file=out_test); counter += 1
+        print("fastsign(sympy.Rational(3, 4)):", fastsign(sympy.Rational(3, 4)), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(sympy.nan):", fastsign(sympy.nan), file=out_test); counter += 1
+        print('   ---', file=out_test)
+        print("fastsign(_MyNumber(-5)):",  fastsign(_MyNumber(-5)), file=out_test); counter += 1
+        print("fastsign(_MyNumber(-1)):",  fastsign(_MyNumber(-1)), file=out_test); counter += 1
+        print("fastsign(_MyNumber(0)):",   fastsign(_MyNumber(0)), file=out_test); counter += 1
+        print("fastsign(_MyNumber(1)):",   fastsign(_MyNumber(1)), file=out_test); counter += 1
+        print("fastsign(_MyNumber(5.1)):", fastsign(_MyNumber(5.1)), file=out_test); counter += 1
+        try:
+            print("fastsign(_MyNumber(nan)):", fastsign(_MyNumber(nan)), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        print('   ---', file=out_test)
+        try:
+            print("fastsign():", fastsign(), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        try:
+            print("fastsign(if_exc=None):",
+                  fastsign(if_exc=None), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        try:
+            print("fastsign(-1, 0):", fastsign(-1, 0), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        try:
+            print("fastsign(-1, 0, 1):", fastsign(-1, 0, 1), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        try:
+            print("fastsign(5.0, code_shift=2):", fastsign(5.0, code_shift=2), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        print('   ---', file=out_test)
+        try:
+            print("fastsign(_ExplodingNumber(-3.14):", fastsign(_ExplodingNumber(-3.14)), file=out_test)
+        except (TypeError, RuntimeError) as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        print('   ---', file=out_test)
+        try:
+            print("fastsign(_NotImplementedNumber(-3.14):", fastsign(_NotImplementedNumber(-3.14)), file=out_test)
+        except TypeError as e:
+            print(f"- {type(e).__name__}: {e}", file=out_test)
+        finally:
+            counter += 1
+        print('   ---', file=out_test)
+        tests = [None, '5.0', 'nan', 'number 5', -1+1j, [-8.75,], {-3.14,},]
+        for x in tests:
+            try:
+                print("fastsign({repr(x)}):", fastsign(x), file=out_test)
+            except TypeError as e:
+                print(f"- {type(e).__name__}: {e}", file=out_test)
+            finally:
+                counter += 1
+        print(_trace(prev_counter, counter, s_cnt), file=out_test)
 
     if start_time is None: # The very first pass to warm Python
         start_time = time.perf_counter()

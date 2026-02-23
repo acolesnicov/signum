@@ -5,11 +5,16 @@ This directory contains validation and benchmarking tools for the `csignum-fast`
 ## Test Files
 
 * `testing.py`: An auxiliary module. Contains items common for all tests, for example, the `detect_version()` function.
-* `simple_test_signum.py`: The prototype that prints test results for visual check; does not use assertions. 121 cases. Works for all versions: for older versions, passes only the corresponding subset of tests.
-* `test_signum.py`: The same 121 cases with assertions and `unittest`. Current version only.
-* `leak_test.py`: seven million-repeating loops for memory leak detection. Current version only.
-* `57_tests_signum.py`: 57 tests from the whole 121-tests set, which are common for all versions. Repeats 100,000 times to estimate execution time. Includes tests that raise exceptions.
-* `41_tests_signum.py` (**Pure Math**): 41 tests from 57 that do not raise exceptions. Repeats 100,000 times to estimate execution time. Our base for benchmarking.
+* `simple_test_signum.py`: The prototype that prints test results for visual check; does not use assertions. 210 cases. Works for all versions: for older versions, passes only the corresponding subset of tests.
+* `test_signum.py`: The same 210 cases plus 53 cases testing equivalence of `sign` and `fastsign` (total 263) with assertions and `unittest`. Current version only.
+* `leak_test.py`: nine million-repeating loops for memory leak detection. Current version only.
+* `57_tests_signum.py`: 57 tests from the whole 210-tests set, which are common for all versions. Repeats 100,000 times to estimate execution time. Includes tests that raise exceptions.
+* `fastsign_57_tests.py`: The same 57 tests for `fastsign`.
+* `41_tests_signum.py` (**Pure Math**): 41 tests from 57 that do not raise exceptions. Repeats 100,000 times to estimate execution time.
+* `fastsign_41_tests.py`: The same 41 tests for `fastsign`.
+* `fastsign.py`: The Python prototype of the function `signum.fastsign(x)`.
+* `CORE_LOGIC.md`: The description of internal sign logic.
+* `*.txt`: Test results.
 
 ## Benchmarking
 
@@ -25,7 +30,9 @@ Benchmarks were conducted using the **Best-of-N** method with the `41_tests_sign
 | 1.1.0+ | 7.2759 | -8.8% | New Year | preprocess=, if_exc= | Intermediate, 15.9% slower |
 | 1.2.2 | 6.2133 | +7.1% | Gold | codeshift=, max optimization | **The Recommended Champion** |
 
-**Efficiency Note:** The transition from v1.1.0+ to v1.2.0 resolved previous performance regressions, resulting in a 15.9% internal throughput improvement because of refined optimizations in C++ code.
+**Efficiency Note 1:** The transition from v1.1.0+ to v1.2.0 resolved previous performance regressions, resulting in a 15.9% internal throughput improvement because of refined optimizations in C++ code.
+
+**Efficiency Note 2:** For `int` and `float`, `fastsign` is up to 1.5 times faster than `sign`. The causes: it has only one argument and skips argument processing found in `sign`; it doesn't perform all three comparisons (`x > 0`, `x < 0`, `x == 0`) but returns after the first success.
 
 ## How to run tests
 

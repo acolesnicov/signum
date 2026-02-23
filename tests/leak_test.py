@@ -1,4 +1,4 @@
-from signum import sign
+from signum import sign as sign, fastsign as fastsign
 from testing import get_passes, set_high_priority, success
 
 from math import nan
@@ -14,7 +14,9 @@ def benchmark_and_leak_check():
     # Test data
     test_cases = [
         ("Base (int)", lambda: sign(-5)),
+        ("Fast (int)", lambda: fastsign(-5)),
         ("Base (float)", lambda: sign(-5.5)),
+        ("Fast (float)", lambda: fastsign(-5.5)),
         ("Preprocess (str)", lambda: sign("15 men", preprocess=lambda s: (float(s.split()[0]),))),
         ("If_exc (error)", lambda: sign("error", if_exc=(-2,))),
         ("Codeshift (error)", lambda: sign("error", codeshift=2)),
@@ -52,4 +54,4 @@ if __name__ == "__main__":
     for _ in range(MAX_PASSES): # Warm up Python
         sign(1)
     benchmark_and_leak_check()
-    print(f'\n{success(7, passes=MAX_PASSES)}')
+    print(f'\n{success(9, passes=MAX_PASSES)}')

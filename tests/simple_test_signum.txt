@@ -1,6 +1,6 @@
-***** Test: e:\signum-project\tests\simple_test_signum.py
+***** Test: E:\signum-v123\tests\simple_test_signum.py
 MAX_PASSES: 10000
-*** Windows: high priority for process 8504 was successfully set ***
+*** Windows: high priority for process 18636 was successfully set ***
 
  1 --- int
 sign(-5): -1
@@ -53,102 +53,106 @@ sign(Fraction(1, 2)): 1
 sign(Fraction(5, 2)): 1
    ---  5 tests for Sec.  8 passed, total  27 tests passed
 
- 9 --- Decimal
+ 9 --- Tests with a very small argument kindly provided by Tim Peters
+sign(Fraction(1, 1 << 2000)): 1
+sign(float(Fraction(1, 1 << 2000))): 0
+   ---  2 tests for Sec.  9 passed, total  29 tests passed
+
+10 --- Decimal
 sign(Decimal(-5.5)): -1
 sign(Decimal(-1.5)): -1
 sign(Decimal(0.0)): 0
 sign(Decimal(1.5)): 1
 sign(Decimal(5.5)): 1
-   ---  5 tests for Sec.  9 passed, total  32 tests passed
+   ---  5 tests for Sec. 10 passed, total  34 tests passed
 
-10 --- Decimal('NaN')
+11 --- Decimal('NaN')
 sign(Decimal('NaN')): nan
-   ---  1 test  for Sec. 10 passed, total  33 tests passed
+   ---  1 test  for Sec. 11 passed, total  35 tests passed
 
-11 --- sympy (substitution and Rational)
+12 --- sympy (substitution and Rational)
 val: -3.14000000000000; type(val): <class 'sympy.core.numbers.Float'>
 type(val > 0): <class 'sympy.logic.boolalg.BooleanFalse'>
 sign(val): -1
 sign(sympy.Rational(3, 4)): 1
-   ---  2 tests for Sec. 11 passed, total  35 tests passed
+   ---  2 tests for Sec. 12 passed, total  37 tests passed
 
-12 --- sympy.nan
+13 --- sympy.nan
 sign(sympy.nan): nan
-   ---  1 test  for Sec. 12 passed, total  36 tests passed
+   ---  1 test  for Sec. 13 passed, total  38 tests passed
 
-13 --- My Custom Class That Have >, <, == With Numbers But Nothing Else
+14 --- My Custom Class That Have >, <, == With Numbers But Nothing Else
 sign(_MyNumber(-5)): -1
 sign(_MyNumber(-1)): -1
 sign(_MyNumber(0)): 0
 sign(_MyNumber(1)): 1
 sign(_MyNumber(5.1)): 1
-- signum.sign: invalid argument `MyNumber(nan)`. Type 'MyNumber' does not support order comparisons (>, <, ==) or NaN detection.
-   ---  6 tests for Sec. 13 passed, total  42 tests passed
+- TypeError: signum.sign: invalid argument `MyNumber(nan)`. Type 'MyNumber' does not support order comparisons (>, <, ==) or NaN detection.
+   ---  6 tests for Sec. 14 passed, total  44 tests passed
 
-14 --- invalid number of positional arguments (0, 0 with keys, 2, 3, 4)
-- signum.sign() takes 1 positional argument but 0 were given
-- signum.sign() takes 1 positional argument but 0 were given
-- signum.sign() takes 1 positional argument but 2 were given
-- signum.sign() takes 1 positional argument but 3 were given
-- signum.sign() takes 1 positional argument but 4 were given
-- signum.sign() takes 1 positional argument but 5 were given
-- signum.sign() got an unexpected keyword argument 'code_shift'
-   ---  7 tests for Sec. 14 passed, total  49 tests passed
+15 --- invalid number of positional arguments (0, 0 with keys, 2, 3, 4)
+- TypeError: signum.sign() takes 1 or 2 positional arguments, got 0
+- TypeError: signum.sign() takes 1 or 2 positional arguments, got 0
+- TypeError: signum.sign() takes 1 or 2 positional arguments, got 3
+- TypeError: signum.sign() takes 1 or 2 positional arguments, got 4
+- TypeError: signum.sign() takes 1 or 2 positional arguments, got 5
+- TypeError: signum.sign() got an unexpected keyword argument 'code_shift'
+   ---  6 tests for Sec. 15 passed, total  50 tests passed
 
-15 --- ExplodingNumber, NotImplementedNumber
-- signum.sign: invalid argument `ExplodingNumber(-3.14)` (type 'ExplodingNumber'). Inner error: <class 'RuntimeError'> returned a result with an exception set
-- signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Inner error: <function NotImplementedNumber.__lt__ at 0x000002569E392C00> returned a result with an exception set
-   ---  2 tests for Sec. 15 passed, total  51 tests passed
+16 --- ExplodingNumber, NotImplementedNumber
+- TypeError: signum.sign: invalid argument `ExplodingNumber(-3.14)` (type 'ExplodingNumber'). Cause: <class 'RuntimeError'> returned a result with an exception set
+- TypeError: signum.sign: invalid argument `NotImplementedNumber(-3.14)` (type 'NotImplementedNumber'). Cause: <function NotImplementedNumber.__lt__ at 0x0000019DF551A020> returned a result with an exception set
+   ---  2 tests for Sec. 16 passed, total  52 tests passed
 
-16 --- inappropriate argument types (None, str, complex, list, set)
-- signum.sign: invalid argument `None` (type 'NoneType'). Inner error: '<' not supported between instances of 'NoneType' and 'int'
-- signum.sign: invalid argument `'5.0'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
-- signum.sign: invalid argument `'nan'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
-- signum.sign: invalid argument `'number 5'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
-- signum.sign: invalid argument `(-1+1j)` (type 'complex'). Inner error: '<' not supported between instances of 'complex' and 'int'
-- signum.sign: invalid argument `[-8.75]` (type 'list'). Inner error: '<' not supported between instances of 'list' and 'int'
-- signum.sign: invalid argument `{-3.14}` (type 'set'). Inner error: '<' not supported between instances of 'set' and 'int'
-   ---  7 tests for Sec. 16 passed, total  58 tests passed
+17 --- inappropriate argument types (None, str, complex, list, set)
+- TypeError: signum.sign: invalid argument `None` (type 'NoneType'). Cause: '<' not supported between instances of 'NoneType' and 'int'
+- TypeError: signum.sign: invalid argument `'5.0'` (type 'str'). Cause: '<' not supported between instances of 'str' and 'int'
+- TypeError: signum.sign: invalid argument `'nan'` (type 'str'). Cause: '<' not supported between instances of 'str' and 'int'
+- TypeError: signum.sign: invalid argument `'number 5'` (type 'str'). Cause: '<' not supported between instances of 'str' and 'int'
+- TypeError: signum.sign: invalid argument `(-1+1j)` (type 'complex'). Cause: '<' not supported between instances of 'complex' and 'int'
+- TypeError: signum.sign: invalid argument `[-8.75]` (type 'list'). Cause: '<' not supported between instances of 'list' and 'int'
+- TypeError: signum.sign: invalid argument `{-3.14}` (type 'set'). Cause: '<' not supported between instances of 'set' and 'int'
+   ---  7 tests for Sec. 17 passed, total  59 tests passed
 
-17 --- preprocess key, simple argument replacement, string conversion
+18 --- preprocess key, simple argument replacement, string conversion
 sign('5.0', preprocess=lambda a: (float(a),)): 1
 sign('nan', preprocess=lambda a: (float(a),)): nan
 sign(-18, preprocess=lambda a: (float(a),)): -1
-   ---  3 tests for Sec. 17 passed, total  61 tests passed
+   ---  3 tests for Sec. 18 passed, total  62 tests passed
 
-18 --- preprocess key, argument replacement, treat small number as zero
+19 --- preprocess key, argument replacement, treat small number as zero
 sign(-1, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): -1
 sign(0, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 0
 sign(-1.87e-18, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 0
 sign(5.0, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 1
-   ---  4 tests for Sec. 18 passed, total  65 tests passed
+   ---  4 tests for Sec. 19 passed, total  66 tests passed
 
-19 --- preprocess key, replace only string argument, extract number from string
+20 --- preprocess key, replace only string argument, extract number from string
 sign("☠️15 men on the dead man's chest☠️", preprocess=n_extract): 1
 sign('Temperature is -.12e+02 °C', preprocess=n_extract): -1
-- signum.sign: invalid argument `'error'` (type 'str'). Inner error: '<' not supported between instances of 'str' and 'int'
+- TypeError: signum.sign: invalid argument `'error'` (type 'str'). Cause: '<' not supported between instances of 'str' and 'int'
 sign(123, preprocess=n_extract): 1
-   ---  4 tests for Sec. 19 passed, total  69 tests passed
+   ---  4 tests for Sec. 20 passed, total  70 tests passed
 
-20 --- preprocess key, replace result, permits complex arguments
+21 --- preprocess key, replace result, permits complex arguments
 sign((-1+1j), preprocess=c_prep): (-0.7071067811865475+0.7071067811865475j)
 sign(-18.4, preprocess=c_prep): -1
-   ---  2 tests for Sec. 20 passed, total  71 tests passed
+   ---  2 tests for Sec. 21 passed, total  72 tests passed
 
-21 --- preprocess key, replace result, float result for 'float' and 'Decimal', sign recursion
+22 --- preprocess key, replace result, float result for 'float' and 'Decimal', sign recursion
 sign(-5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None): -1
 sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None): -1.0
 sign(Decimal('-5.5'), preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None): -1.0
-   ---  3 tests for Sec. 21 passed, total  74 tests passed
+   ---  3 tests for Sec. 22 passed, total  75 tests passed
 
-22 --- preprocess key, replace result or argument, treat small number as zero differently
+23 --- preprocess key, replace result or argument, treat small number as zero differently
 sign(-1, preprocess=ppl): -1
 sign(0, preprocess=ppl): 0
 sign(-1.87e-18, preprocess=ppl): 0
 sign(5.0, preprocess=ppl): 1
-   ---  4 tests for Sec. 22 passed, total  78 tests passed
+   ---  4 tests for Sec. 23 passed, total  79 tests passed
 
-23 --- if_exc key (exception safety)
+24 --- if_exc key (exception safety)
 Type: 'NoneType' ? sign(None, if_exc=(None,)): None
 Type: 'str'      ? sign('5.0', if_exc=(-2,)): -2
 Type: 'str'      ? sign('nan', if_exc=(nan,)): nan
@@ -161,27 +165,27 @@ Type: 'float'    ! sign(31.4, if_exc=(None,)): 1
 Type: 'float'    ! sign(nan, if_exc=(-2,)): nan
 Type: 'Fraction' ! sign(Fraction(-99, 19), if_exc=(nan,)): -1
 Type: 'Decimal'  ! sign(Decimal('101.78'), if_exc=(None,)): 1
-   --- 12 tests for Sec. 23 passed, total  90 tests passed
+   --- 12 tests for Sec. 24 passed, total  91 tests passed
 
-24 --- both preprocess and if_exc key
+25 --- both preprocess and if_exc key
 sign(-5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,)): -1
 sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,)): -1.0
 sign(Decimal('-5.5'), preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,)): -1.0
 sign('error', preprocess=lambda a: (a, float(sign(a))) if isinstance(a, (float, Decimal)) else None, if_exc=(None,)): None
-   ---  4 tests for Sec. 24 passed, total  94 tests passed
+   ---  4 tests for Sec. 25 passed, total  95 tests passed
 
-25 --- codeshift and key combinations
+26 --- codeshift and key combinations
 sign('error', codeshift=2): 0
 sign(-5, codeshift=2): 1
 sign(0, codeshift=2): 2
 sign(5, codeshift=2): 3
 sign(nan, codeshift=2): 4
    ---
-sign('error', if_exc=(13,), codeshift=2): 13
-sign(-5, if_exc=(13,), codeshift=2): 1
-sign(0, if_exc=(13,), codeshift=2): 2
-sign(5, if_exc=(13,), codeshift=2): 3
-sign(nan, if_exc=(13,), codeshift=2): 4
+sign('error', if_exc=(-7,), codeshift=2): -7
+sign(-5, if_exc=(-7,), codeshift=2): 1
+sign(0, if_exc=(-7,), codeshift=2): 2
+sign(5, if_exc=(-7,), codeshift=2): 3
+sign(nan, if_exc=(-7,), codeshift=2): 4
    ---
 sign('error', preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2): 0
 sign(-1, preprocess=lambda a: (0 if abs(a) < _EPS else a,), codeshift=2): 1
@@ -196,12 +200,130 @@ sign(0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else No
 sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1): 2
 sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, codeshift=1): nan
    ---
-sign('error', preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): 13
-sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): -1.0
-sign(0.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): 0.0
-sign(0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): 1
-sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): 2
-sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(13,), codeshift=1): nan
-   --- 27 tests for Sec. 25 passed, total 121 tests passed
+sign('error', preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): -7
+sign(-5.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): -1.0
+sign(0.0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): 0.0
+sign(0, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): 1
+sign(5, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): 2
+sign(nan, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,), codeshift=1): nan
+   --- 27 tests for Sec. 26 passed, total 122 tests passed
 
-Success of v1.2.2 : 121 tests from 25 sections passed in    5.6995s (passes: 10000; sign calls: 1210000).
+27 --- v1.2.3: positional codeshift
+- TypeError: signum.sign(): the 2nd positional argument used; 'codeshift=' is not permitted
+sign('error', 2): 0
+sign(-5, 2): 1
+sign(0, 2): 2
+sign(5, 2): 3
+sign(nan, 2): 4
+   ---
+sign('error', 2, if_exc=(-7,)): -7
+sign(-5, 2, if_exc=(-7,)): 1
+sign(0, 2, if_exc=(-7,)): 2
+sign(5, 2, if_exc=(-7,)): 3
+sign(nan, 2, if_exc=(-7,)): 4
+   ---
+sign('error', 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 0
+sign(-1, 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 1
+sign(0, 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 2
+sign(-1.87e-18, 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 2
+sign(5.0, 2, preprocess=lambda a: (0 if abs(a) < _EPS else a,)): 3
+   ---
+sign('error', 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): -1
+sign(-5.0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): -1.0
+sign(0.0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): 0.0
+sign(0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): 1
+sign(5, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): 2
+sign(nan, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None): nan
+sign(nan, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None): 3
+   ---
+sign('error', 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): -7
+sign(-5.0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): -1.0
+sign(0.0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): 0.0
+sign(0, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): 1
+sign(5, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): 2
+sign(nan, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) else None, if_exc=(-7,)): nan
+sign(nan, 1, preprocess=lambda a: (a, float(sign(a))) if isinstance(a, float) and not isnan(a) else None, if_exc=(-7,)): 3
+   --- 30 tests for Sec. 27 passed, total 152 tests passed
+
+28 --- v1.2.3: fastsign
+fastsign(-5): -1
+fastsign(-1): -1
+fastsign(0): 0
+fastsign(1): 1
+fastsign(5): 1
+   ---
+fastsign(True): 1
+fastsign(False): 0
+   ---
+fastsign(10**1000): 1
+fastsign(-10**1000): -1
+fastsign(10**1000-10**1000): 0
+   ---
+fastsign(-5.0): -1
+fastsign(-1.0): -1
+fastsign(0.0): 0
+fastsign(1.0): 1
+fastsign(5.0): 1
+   ---
+fastsign(float('-0.0')): 0
+fastsign(float('+0.0')): 0
+   ---
+fastsign(-inf): -1
+fastsign(inf): 1
+   ---
+fastsign(float('-nan')): nan
+fastsign(nan): nan
+fastsign(0.0*nan): nan
+   ---
+fastsign(Fraction(-5, 2)): -1
+fastsign(Fraction(-1, 2)): -1
+fastsign(Fraction(0, 2)): 0
+fastsign(Fraction(1, 2)): 1
+fastsign(Fraction(5, 2)): 1
+   ---
+fastsign(Fraction(1, 1 << 2000)): 1
+fastsign(float(Fraction(1, 1 << 2000))): 0
+   ---
+fastsign(Decimal(-5.5)): -1
+fastsign(Decimal(-1.5)): -1
+fastsign(Decimal(0.0)): 0
+fastsign(Decimal(1.5)): 1
+fastsign(Decimal(5.5)): 1
+   ---
+fastsign(Decimal('NaN')): nan
+   ---
+val: -3.14000000000000; type(val): <class 'sympy.core.numbers.Float'>
+type(val > 0): <class 'sympy.logic.boolalg.BooleanFalse'>
+fastsign(val): -1
+fastsign(sympy.Rational(3, 4)): 1
+   ---
+fastsign(sympy.nan): nan
+   ---
+fastsign(_MyNumber(-5)): -1
+fastsign(_MyNumber(-1)): -1
+fastsign(_MyNumber(0)): 0
+fastsign(_MyNumber(1)): 1
+fastsign(_MyNumber(5.1)): 1
+- TypeError: must be real number, not MyNumber
+   ---
+- TypeError: signum.fastsign() takes exactly one argument (0 given)
+- TypeError: signum.fastsign() takes no keyword arguments
+- TypeError: signum.fastsign() takes exactly one argument (2 given)
+- TypeError: signum.fastsign() takes exactly one argument (3 given)
+- TypeError: signum.fastsign() takes no keyword arguments
+   ---
+- RuntimeError: Boom!
+   ---
+fastsign(_NotImplementedNumber(-3.14): -1
+   ---
+- TypeError: must be real number, not NoneType
+- TypeError: signum.fastsign(): cannot compare or check for NaN. Cause: comparison with 'int' not implemented for type 'str'
+- TypeError: signum.fastsign(): cannot compare or check for NaN. Cause: comparison with 'int' not implemented for type 'str'
+- TypeError: signum.fastsign(): cannot compare or check for NaN. Cause: comparison with 'int' not implemented for type 'str'
+- TypeError: must be real number, not complex
+- TypeError: must be real number, not list
+- TypeError: must be real number, not set
+   --- 58 tests for Sec. 28 passed, total 210 tests passed
+
+Success of v1.2.3 : 210 tests from 28 sections passed in    8.4712s (passes: 10000; sign calls: 2100000).
+DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and will be removed in August 2026; use the second positional argument instead

@@ -3,14 +3,40 @@
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 ![Status](https://img.shields.io/badge/release-Gold%20Edition-gold.svg)
 ![Performance](https://img.shields.io/badge/performance-+16%25%20faster-orange.svg)
-![Tests](https://img.shields.io/badge/tests-121%20passed-brightgreen.svg)
+![Tests](https://img.shields.io/badge/tests-263%20passed-brightgreen.svg)
 ![PyPI Version](https://img.shields.io/pypi/v/csignum-fast.svg)
 
 **High-performance, versatile implementation of the universal 'sign' function for Python**
 
-*Released on January 5, 2026* ⊙ *Gold Edition*
+*Released on February 23, 2026* ⊙ *Gold Edition+*
+
+Version **1.2.3**: Preview of two new options from the upcoming version v1.3.1.
+- `codeshift` as the second positional argument;
+- the simplified `fastsign` that is up to **1.5 times faster** than `sign` but has no additional options.
 
 Version **1.2.2**: Maximum speed (**+7.1%** vs v.1.0.2 and **+15.9%** vs 1.1.5), and the third keyword argument.
+
+## Important Note on API Changes
+
+Starting from v1.2.3, the `codeshift` parameter is preferred as a **second positional argument**. Using `codeshift=` as a keyword will trigger a `DeprecationWarning` and is scheduled for removal in August 2026. This change improves performance and aligns with the upcoming v1.3.1 architecture.
+
+## Notes on `fastsign`
+
+Since v1.2.3, the `fastsign(x)` function is provided for scenarios where performance is critical.
+
+* **Performance:** fastsign(x) provides up to 50% performance boost by simplifying type checks and focusing on core numeric types.
+
+* **Implementation:** It is a straightforward C++ port of the [`fastsign.py`](https://github.com/acolesnicov/signum/tree/main/tests/fastsign.py) prototype. While the Python version uses 4 lines of logic and 17 lines of exception handling, the C++ version is optimized for even tighter execution loops.
+
+* **Implicit Conversion:** To process unusual cases, `fastsign` relies on implicit `float(x)` conversion. If an incompatible type is passed (like `None` or a list), you may see a generic `TypeError: must be real number`. This is expected behavior.
+
+* **Strict vs Fast:**
+
+    * `sign(x)` is a **strict analyzer.** It performs thorough type checking and is recommended for “wild” data where objects might have incomplete numeric implementations.
+
+    * `fastsign(x)` is an **optimized calculator.** It is ideal for large arrays of standard numbers.
+
+    * **Validation:** The reliability of `fastsign` is verified by 53 equivalence tests, ensuring it matches sign(x) results in 52 cases. The equivalence is checked for all standard Python numeric types, including `int`, `float`, `Fraction`, `Decimal`, and `sympy` numbers. The single exclusion is a specific edge case: a custom type that lacks comparisons but supports conversion to `float`.
 
 ## Key Features
 
@@ -25,10 +51,10 @@ Version **1.2.2**: Maximum speed (**+7.1%** vs v.1.0.2 and **+15.9%** vs 1.1.5),
     * Any existing and future objects that support rich comparisons with numbers.
 4.  **Informative Error Handling for Easy Debugging**: Provides clear, descriptive `TypeError` messages when passed non-numeric, non-scalar, or incomparable arguments.
 5.  **⚡ High Performance**: Branch-optimized C++20 core; `METH_FASTCALL` argument scan; static module-level constants. The speed is near maximum for a C++ extension for Python: since v1.0.0 all possibilities to increase performance have been systematically searched and applied.
-6.  **✅ Thoroughly Tested**: Tested on 121 cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against older versions.
+6.  **✅ Thoroughly Tested**: Tested on 263 cases including different types, edge cases, new custom class, keyword and inappropriate arguments. Also tested: memory leaks, and benchmarking against older versions.
 7.  **✨ Pre-processing Engine**: Use the `preprocess` keyword argument to transform input before calculation or trigger an **Early Exit** (recursion permitted).
 8.  **🛡️ Exception safety**: The `if_exc` keyword argument allows to define a fallback value (like `None`, `math.nan`, or `-2`) instead of crashing on invalid types.
-9.  **✨ 5-way uniform result**: Use the `codeshift` keyword argument to encode all 5 possible `sign` exits (`TypeError`, -1, 0, 1, `NaN`) by subsequent integers for switching or indexing.
+9.  **✨ 5-way uniform result**: Use the `codeshift` argument to encode all 5 possible `sign` exits (`TypeError`, -1, 0, 1, `NaN`) by subsequent integers for switching or indexing.
 
 ## Installation
 
@@ -38,6 +64,7 @@ pip install csignum-fast
 
 ## Standard Usage
 
+### `sign`
 ```python
 from signum import sign # Obligatory for all examples
 
@@ -49,13 +76,27 @@ from decimal import Decimal
 print(sign(Decimal("0.0"))) #  0
 ```
 
+### `fastsign`
+```python
+from signum import fastsign
+
+print(fastsign(-10**100))       # -1
+print(fastsign(3.14))           #  1
+print(fastsign(float('-nan')))  # math.nan
+
+from decimal import Decimal
+print(sign(Decimal("0.0"))) #  0
+```
+
+The following advanced features are not available in `fastsign`.
+
 ## Advanced Usage (New features since v1.1.0)
 
 ### ☢️ Attention: Contract Programming!
 For Performance reasons, keyword argument values are **not checked** by the `sign` function. **Your** responsibility is:
-* To pass a **`callable`** for `preprocess` (accepts one argument, returns `None` or a `tuple`).
-* To pass a **`tuple`** for `if_exc`.
-* To pass an **`int`** for `codeshift`.
+* To pass a `callable` for `preprocess` (accepts one argument, returns `None` or a `tuple`).
+* To pass a `tuple` for `if_exc`.
+* To pass an `int` for positional or keyword `codeshift`.
 * To guarantee that **all** calculations implied by these arguments do not result in additional exceptions or crashes.
 
 *Passing incorrect values to these parameters may result in **unpredictable behavior** or **segmentation faults**.*
@@ -119,7 +160,7 @@ sign("not a number", if_exc=(-2,)) # Returns -2 instead of `TypeError` exception
 ### You can use two keyword arguments at once
 With `preprocess`, you replace arguments (or even results) in specific cases, while `if_exc` prevents exceptions for all that remains.
 
-### Comfortable 5-way processing with `codeshift` keyword argument
+### Comfortable 5-way processing with `codeshift` argument
 When innocent people lived in the heavenly world of pure mathematics, the `sign` function was **ternary**. The results were -1, 0, +1.
 
 In the meantime, people entered the real world and started programming. In the real world, there is the IEEE 754 standard, which describes the tricky number `NaN`, that is, **‘Not a Number’**. Any function of `NaN`, according to the rules of good taste, should return `NaN`.
@@ -136,14 +177,16 @@ To catch NaN, you need to write `if isnan(sign(...)):`.
 
 Only the usual results `-1, 0, 1` do not cause any trouble: a cascade of `if ... elif ... else` with checks for `==`, or `match ... case ...` solve the problem.
 
-The keyword argument `codeshift` converts `sign` into a **uniform 5-way switch**. All 5 possible `sign` results are **encoded as integers**: `TypeError` becomes -2; -1, 0, 1 remain unchanged; `NaN` is encoded by 2. The value of the `codeshift` argument, which must be an integer, is added to this code, and the resulting number is returned as the result. (Default is `codeshift=None`: usual processing).
+The second positional argument `codeshift` converts `sign` into a **uniform 5-way switch**. All 5 possible `sign` results are **encoded as integers**: `TypeError` and any other exception becomes -2; -1, 0, 1 remain unchanged; `NaN` is encoded by 2. The value of the `codeshift` argument, which must be an integer, is added to this code, and the resulting number is returned as the result. (Default is `None`: usual processing).
+
+In previous version, `codeshift` was a keyword argument. This is **deprecated** and will be removed in August 2026.
 
 The easiest way to continue is to use the **`match ... case ...`** operator. You can also use the result as an **index**.
 
 Everything aforementioned is summarized in the table:
 
 #### Quinary way of `signum.sign()` through `codeshift`
-| Argument | Std result | `codeshift=0` | `codeshift=2` |
+| Argument | Std result | `sign(x, 0)` | `sign(x, 2)` |
 | :--- | :--- | :--- | :--- |
 | Invalid | `TypeError` | -2 | 0 |
 | Negative | -1 | -1 | 1 |
@@ -156,7 +199,7 @@ Everything aforementioned is summarized in the table:
 # The golden match
 from signum import sign # Obligatory for all examples
 
-match sign((d := data_input), codeshift=2):
+match sign((d := data_input), 2):
     case 0: handle_error(d)
     case 1: handle_negative(d)
     case 2: handle_zero(d)
@@ -165,7 +208,7 @@ match sign((d := data_input), codeshift=2):
 
 # Indexing pattern
 function_list = [handle_error, handle_negative, handle_zero, handle_positive, handle_nan]
-function_list[sign((d := data_input), codeshift=2)](d)
+function_list[sign((d := data_input), 2)](d)
 ```
 
 ### Interaction with other keyword arguments
@@ -194,8 +237,9 @@ The general principle is “an explicitly specified **special** case **overrides
 **Note:** Benchmarking scripts require `psutil` (for priority management) and `sympy` (for `sympy` numeric types and `NaN` validation).
 
 ### Reliability
--  **Memory Safety:** Verified with rigorous stress test (**0 bytes leaked over 7M iterations**).
--  **Expanded Test Coverage:** 121 validation cases (vs 57 for  v1.0.2 and 94 for v1.1.0+).
+-  **Memory Safety:** Verified with rigorous stress test (**0 bytes leaked over 9M iterations**).
+-  **Expanded Test Coverage:** 210 validation cases (vs 57 for  v1.0.2 and 94 for v1.1.0+), plus 53 cases testing equivalence of `sign` and `fastsign` (total 263 cases).
+-  **Strong design principles:** See the [PRINCIPLES](https://github.com/acolesnicov/signum/blob/main/PRINCIPLES.md) file for details.
 
 ## License
 This project is licensed under the **MIT License**. See the [LICENSE](https://github.com/acolesnicov/signum/blob/main/LICENSE) file for details.
