@@ -18,4 +18,5 @@ _cpp_check.bat
 *.obj
 *.so
 .pypirc
+.editorconfig
 tester.*
