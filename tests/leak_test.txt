@@ -14,5 +14,5 @@ Codeshift (error)    |    0.7124 |      21.63 (+0.00)
 Codeshift (int)      |    0.0780 |      21.63 (+0.00)
 Codeshift (nan)      |    0.0502 |      21.63 (+0.00)
 
-Success of v1.2.5 : 9 tests passed (passes: 1000000; sign calls: 9000000).
+Success of v1.2.6 : 9 tests passed (passes: 1000000; sign calls: 9000000).
 DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and will be removed in August 2026; use the second positional argument instead

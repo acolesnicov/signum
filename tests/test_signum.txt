@@ -33,7 +33,7 @@
  9 tests for Sec. 31: `fastsign vs sign: same error cases` passed, total 262 tests passed
  1 test  for Sec. 32: `fastsign vs sign: different behavior` passed, total 263 tests passed
 
-Success of v1.2.5 : 263 tests from 32 sections passed.
+Success of v1.2.6 : 263 tests from 32 sections passed.
 
 .
 ----------------------------------------------------------------------

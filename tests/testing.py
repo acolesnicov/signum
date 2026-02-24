@@ -41,7 +41,7 @@ SHORT_SIMPLE_TEST = 3 # 0: pass only tests common with v1.0.2 to compare timing
 SST_DICT          = {'1.0.2': 0,
                      '1.1.0+': 1,
                      '1.2.0': 2, '1.2.1': 2, '1.2.2': 2,
-                     '1.2.3': 3, '1.2.4': 3, '1.2.5': 3,
+                     '1.2.3': 3, '1.2.4': 3, '1.2.5': 3, '1.2.6': 3,
                      'default': 3,}
 
 EPS = 1e-9

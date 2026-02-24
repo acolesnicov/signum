@@ -325,5 +325,5 @@ fastsign(_NotImplementedNumber(-3.14): -1
 - TypeError: must be real number, not set
    --- 58 tests for Sec. 28 passed, total 210 tests passed
 
-Success of v1.2.5 : 210 tests from 28 sections passed in    8.4221s (passes: 10000; sign calls: 2100000).
+Success of v1.2.6 : 210 tests from 28 sections passed in    8.4221s (passes: 10000; sign calls: 2100000).
 DeprecationWarning: signum.sign: 'codeshift=' keyword is deprecated and will be removed in August 2026; use the second positional argument instead

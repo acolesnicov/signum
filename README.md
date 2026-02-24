@@ -10,7 +10,7 @@
 
 *Released on February 24, 2026* ⊙ *Gold Edition+*
 
-Version **1.2.5**: Fixed dead link in docs for v1.2.3.
+Version **1.2.6**: Fixed dead link and typos in docs for v1.2.3.
 
 Version **1.2.3**: Preview of two new options from the upcoming version v1.3.1.
 - `codeshift` as the second positional argument;

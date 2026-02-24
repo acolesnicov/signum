@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.6] - 2026-02-24 (Gold Edition+)
+-  Fixed documentation typos.
+
 ## [1.2.5] - 2026-02-24 (Gold Edition+)
 -  Fixed dead link in documantation.
 
